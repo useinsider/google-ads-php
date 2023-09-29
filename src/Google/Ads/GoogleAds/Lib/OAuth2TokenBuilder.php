@@ -168,8 +168,8 @@ final class OAuth2TokenBuilder extends AbstractGoogleAdsBuilder
             );
         } else {
             return new UserRefreshCredentials(
-                scope: null,
-                jsonKey: [
+                null,
+                [
                     'client_id' => $this->clientId,
                     'client_secret' => $this->clientSecret,
                     'refresh_token' => $this->refreshToken
