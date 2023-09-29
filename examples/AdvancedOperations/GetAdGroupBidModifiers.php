@@ -24,15 +24,15 @@ use GetOpt\GetOpt;
 use Google\Ads\GoogleAds\Examples\Utils\ArgumentNames;
 use Google\Ads\GoogleAds\Examples\Utils\ArgumentParser;
 use Google\Ads\GoogleAds\Lib\OAuth2TokenBuilder;
-use Google\Ads\GoogleAds\Lib\V12\GoogleAdsClient;
-use Google\Ads\GoogleAds\Lib\V12\GoogleAdsClientBuilder;
-use Google\Ads\GoogleAds\Lib\V12\GoogleAdsException;
-use Google\Ads\GoogleAds\V12\Enums\DayOfWeekEnum\DayOfWeek;
-use Google\Ads\GoogleAds\V12\Enums\DeviceEnum\Device;
-use Google\Ads\GoogleAds\V12\Enums\HotelDateSelectionTypeEnum\HotelDateSelectionType;
-use Google\Ads\GoogleAds\V12\Enums\PreferredContentTypeEnum\PreferredContentType;
-use Google\Ads\GoogleAds\V12\Errors\GoogleAdsError;
-use Google\Ads\GoogleAds\V12\Services\GoogleAdsRow;
+use Google\Ads\GoogleAds\Lib\V14\GoogleAdsClient;
+use Google\Ads\GoogleAds\Lib\V14\GoogleAdsClientBuilder;
+use Google\Ads\GoogleAds\Lib\V14\GoogleAdsException;
+use Google\Ads\GoogleAds\V14\Enums\DayOfWeekEnum\DayOfWeek;
+use Google\Ads\GoogleAds\V14\Enums\DeviceEnum\Device;
+use Google\Ads\GoogleAds\V14\Enums\HotelDateSelectionTypeEnum\HotelDateSelectionType;
+use Google\Ads\GoogleAds\V14\Errors\GoogleAdsError;
+use Google\Ads\GoogleAds\V14\Services\GoogleAdsRow;
+use Google\Ads\GoogleAds\V14\Services\SearchGoogleAdsRequest;
 use Google\ApiCore\ApiException;
 
 /** This example gets ad group bid modifiers. */
@@ -60,6 +60,12 @@ class GetAdGroupBidModifiers
         // OAuth2 credentials above.
         $googleAdsClient = (new GoogleAdsClientBuilder())->fromFile()
             ->withOAuth2Credential($oAuth2Credential)
+            // We set this value to true to show how to use GAPIC v2 source code. You can remove the
+            // below line if you wish to use the old-style source code. Note that in that case, you
+            // probably need to modify some parts of the code below to make it work.
+            // For more information, see
+            // https://developers.devsite.corp.google.com/google-ads/api/docs/client-libs/php/gapic.
+            ->usingGapicV2Source(true)
             ->build();
 
         try {
@@ -121,8 +127,7 @@ class GetAdGroupBidModifiers
               . 'ad_group_bid_modifier.hotel_length_of_stay.max_nights, '
               . 'ad_group_bid_modifier.hotel_check_in_day.day_of_week, '
               . 'ad_group_bid_modifier.hotel_check_in_date_range.start_date, '
-              . 'ad_group_bid_modifier.hotel_check_in_date_range.end_date, '
-              . 'ad_group_bid_modifier.preferred_content.type '
+              . 'ad_group_bid_modifier.hotel_check_in_date_range.end_date '
           . 'FROM ad_group_bid_modifier';
         if ($adGroupId !== null) {
             $query .= " WHERE ad_group.id = $adGroupId";
@@ -130,8 +135,9 @@ class GetAdGroupBidModifiers
         $query .= " LIMIT 10000";
 
         // Issues a search request by specifying page size.
-        $response =
-            $googleAdsServiceClient->search($customerId, $query, ['pageSize' => self::PAGE_SIZE]);
+        $response = $googleAdsServiceClient->search(
+            SearchGoogleAdsRequest::build($customerId, $query)->setPageSize(self::PAGE_SIZE)
+        );
 
         // Iterates over all rows in all pages and prints the requested field values for
         // the ad group bid modifier in each row.
@@ -175,12 +181,6 @@ class GetAdGroupBidModifiers
                         $adGroupBidModifier->getHotelLengthOfStay()->getMinNights() . ', ';
                     $criterionDetails .= 'Max Nights: ' .
                         $adGroupBidModifier->getHotelLengthOfStay()->getMaxNights();
-                    break;
-                case 'preferred_content':
-                    $criterionDetails .= 'Type: ' .
-                        PreferredContentType::name(
-                            $adGroupBidModifier->getPreferredContent()->getType()
-                        );
                     break;
                 case 'hotel_check_in_date_range':
                     $criterionDetails .= 'Start Date: ' .

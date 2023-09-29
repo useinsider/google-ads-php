@@ -25,29 +25,33 @@ use Google\Ads\GoogleAds\Examples\Utils\ArgumentNames;
 use Google\Ads\GoogleAds\Examples\Utils\ArgumentParser;
 use Google\Ads\GoogleAds\Examples\Utils\Helper;
 use Google\Ads\GoogleAds\Lib\OAuth2TokenBuilder;
-use Google\Ads\GoogleAds\Lib\V12\GoogleAdsClient;
-use Google\Ads\GoogleAds\Lib\V12\GoogleAdsClientBuilder;
-use Google\Ads\GoogleAds\Lib\V12\GoogleAdsException;
-use Google\Ads\GoogleAds\Lib\V12\GoogleAdsServerStreamDecorator;
-use Google\Ads\GoogleAds\Util\V12\GoogleAdsFailures;
-use Google\Ads\GoogleAds\Util\V12\ResourceNames;
-use Google\Ads\GoogleAds\V12\Common\ItemAttribute;
-use Google\Ads\GoogleAds\V12\Common\OfflineUserAddressInfo;
-use Google\Ads\GoogleAds\V12\Common\StoreSalesMetadata;
-use Google\Ads\GoogleAds\V12\Common\StoreSalesThirdPartyMetadata;
-use Google\Ads\GoogleAds\V12\Common\TransactionAttribute;
-use Google\Ads\GoogleAds\V12\Common\UserData;
-use Google\Ads\GoogleAds\V12\Common\UserIdentifier;
-use Google\Ads\GoogleAds\V12\Enums\OfflineUserDataJobFailureReasonEnum\OfflineUserDataJobFailureReason;
-use Google\Ads\GoogleAds\V12\Enums\OfflineUserDataJobStatusEnum\OfflineUserDataJobStatus;
-use Google\Ads\GoogleAds\V12\Enums\OfflineUserDataJobTypeEnum\OfflineUserDataJobType;
-use Google\Ads\GoogleAds\V12\Errors\GoogleAdsError;
-use Google\Ads\GoogleAds\V12\Resources\OfflineUserDataJob;
-use Google\Ads\GoogleAds\V12\Services\AddOfflineUserDataJobOperationsResponse;
-use Google\Ads\GoogleAds\V12\Services\CreateOfflineUserDataJobResponse;
-use Google\Ads\GoogleAds\V12\Services\GoogleAdsRow;
-use Google\Ads\GoogleAds\V12\Services\OfflineUserDataJobOperation;
-use Google\Ads\GoogleAds\V12\Services\OfflineUserDataJobServiceClient;
+use Google\Ads\GoogleAds\Lib\V14\GoogleAdsClient;
+use Google\Ads\GoogleAds\Lib\V14\GoogleAdsClientBuilder;
+use Google\Ads\GoogleAds\Lib\V14\GoogleAdsException;
+use Google\Ads\GoogleAds\Lib\V14\GoogleAdsServerStreamDecorator;
+use Google\Ads\GoogleAds\Util\V14\GoogleAdsFailures;
+use Google\Ads\GoogleAds\Util\V14\ResourceNames;
+use Google\Ads\GoogleAds\V14\Common\ItemAttribute;
+use Google\Ads\GoogleAds\V14\Common\OfflineUserAddressInfo;
+use Google\Ads\GoogleAds\V14\Common\StoreSalesMetadata;
+use Google\Ads\GoogleAds\V14\Common\StoreSalesThirdPartyMetadata;
+use Google\Ads\GoogleAds\V14\Common\TransactionAttribute;
+use Google\Ads\GoogleAds\V14\Common\UserData;
+use Google\Ads\GoogleAds\V14\Common\UserIdentifier;
+use Google\Ads\GoogleAds\V14\Enums\OfflineUserDataJobFailureReasonEnum\OfflineUserDataJobFailureReason;
+use Google\Ads\GoogleAds\V14\Enums\OfflineUserDataJobStatusEnum\OfflineUserDataJobStatus;
+use Google\Ads\GoogleAds\V14\Enums\OfflineUserDataJobTypeEnum\OfflineUserDataJobType;
+use Google\Ads\GoogleAds\V14\Errors\GoogleAdsError;
+use Google\Ads\GoogleAds\V14\Resources\OfflineUserDataJob;
+use Google\Ads\GoogleAds\V14\Services\AddOfflineUserDataJobOperationsRequest;
+use Google\Ads\GoogleAds\V14\Services\AddOfflineUserDataJobOperationsResponse;
+use Google\Ads\GoogleAds\V14\Services\Client\OfflineUserDataJobServiceClient;
+use Google\Ads\GoogleAds\V14\Services\CreateOfflineUserDataJobRequest;
+use Google\Ads\GoogleAds\V14\Services\CreateOfflineUserDataJobResponse;
+use Google\Ads\GoogleAds\V14\Services\GoogleAdsRow;
+use Google\Ads\GoogleAds\V14\Services\OfflineUserDataJobOperation;
+use Google\Ads\GoogleAds\V14\Services\RunOfflineUserDataJobRequest;
+use Google\Ads\GoogleAds\V14\Services\SearchGoogleAdsStreamRequest;
 use Google\ApiCore\ApiException;
 
 /**
@@ -148,6 +152,12 @@ class UploadStoreSalesTransactions
         $googleAdsClient = (new GoogleAdsClientBuilder())
             ->fromFile()
             ->withOAuth2Credential($oAuth2Credential)
+            // We set this value to true to show how to use GAPIC v2 source code. You can remove the
+            // below line if you wish to use the old-style source code. Note that in that case, you
+            // probably need to modify some parts of the code below to make it work.
+            // For more information, see
+            // https://developers.devsite.corp.google.com/google-ads/api/docs/client-libs/php/gapic.
+            ->usingGapicV2Source(true)
             ->build();
 
         try {
@@ -270,7 +280,9 @@ class UploadStoreSalesTransactions
         );
 
         // Issues an asynchronous request to run the offline user data job.
-        $offlineUserDataJobServiceClient->runOfflineUserDataJob($offlineUserDataJobResourceName);
+        $offlineUserDataJobServiceClient->runOfflineUserDataJob(
+            RunOfflineUserDataJobRequest::build($offlineUserDataJobResourceName)
+        );
 
         printf(
             "Sent request to asynchronously run offline user data job: '%s'.%s",
@@ -388,8 +400,7 @@ class UploadStoreSalesTransactions
         /** @var CreateOfflineUserDataJobResponse $createOfflineUserDataJobResponse */
         $createOfflineUserDataJobResponse =
             $offlineUserDataJobServiceClient->createOfflineUserDataJob(
-                $customerId,
-                $offlineUserDataJob
+                CreateOfflineUserDataJobRequest::build($customerId, $offlineUserDataJob)
             );
         $offlineUserDataJobResourceName = $createOfflineUserDataJobResponse->getResourceName();
         printf(
@@ -445,12 +456,13 @@ class UploadStoreSalesTransactions
         // [START enable_warnings_1]
         // Issues a request to add the operations to the offline user data job.
         /** @var AddOfflineUserDataJobOperationsResponse $operationResponse */
-        $response = $offlineUserDataJobServiceClient->addOfflineUserDataJobOperations(
+        $request = AddOfflineUserDataJobOperationsRequest::build(
             $offlineUserDataJobResourceName,
-            $userDataJobOperations,
-            // (Optional) Enables partial failure and warnings.
-            ['enablePartialFailure' => true, 'enableWarnings' => true]
+            $userDataJobOperations
         );
+        // (Optional) Enables partial failure and warnings.
+        $request->setEnablePartialFailure(true)->setEnableWarnings(true);
+        $response = $offlineUserDataJobServiceClient->addOfflineUserDataJobOperations($request);
         // [END enable_warnings_1]
 
         // Prints the status message if any partial failure error is returned.
@@ -522,7 +534,7 @@ class UploadStoreSalesTransactions
             'user_identifiers' => [
                 new UserIdentifier([
                     // Email addresses must be normalized and hashed.
-                    'hashed_email' => self::normalizeAndHash('customer@example.com')
+                    'hashed_email' => self::normalizeAndHash('dana@example.com')
                 ]),
                 new UserIdentifier([
                     'address_info' => new OfflineUserAddressInfo(['state' => 'NY'])
@@ -552,8 +564,8 @@ class UploadStoreSalesTransactions
                 new UserIdentifier([
                     'address_info' => new OfflineUserAddressInfo([
                         // First and last name must be normalized and hashed.
-                        'hashed_first_name' => self::normalizeAndHash('John'),
-                        'hashed_last_name' => self::normalizeAndHash('Doe'),
+                        'hashed_first_name' => self::normalizeAndHash('Dana'),
+                        'hashed_last_name' => self::normalizeAndHash('Quinn'),
                         // Country code and zip code are sent in plain text.
                         'country_code' => 'US',
                         'postal_code' => '10011'
@@ -637,7 +649,9 @@ class UploadStoreSalesTransactions
 
         // Issues a search stream request.
         /** @var GoogleAdsServerStreamDecorator $stream */
-        $stream = $googleAdsServiceClient->searchStream($customerId, $query);
+        $stream = $googleAdsServiceClient->searchStream(
+            SearchGoogleAdsStreamRequest::build($customerId, $query)
+        );
 
         // Prints out some information about the offline user data.
         /** @var GoogleAdsRow $googleAdsRow */

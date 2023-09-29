@@ -24,17 +24,20 @@ use GetOpt\GetOpt;
 use Google\Ads\GoogleAds\Examples\Utils\ArgumentNames;
 use Google\Ads\GoogleAds\Examples\Utils\ArgumentParser;
 use Google\Ads\GoogleAds\Lib\OAuth2TokenBuilder;
-use Google\Ads\GoogleAds\Lib\V12\GoogleAdsClient;
-use Google\Ads\GoogleAds\Lib\V12\GoogleAdsClientBuilder;
-use Google\Ads\GoogleAds\Lib\V12\GoogleAdsException;
+use Google\Ads\GoogleAds\Lib\V14\GoogleAdsClient;
+use Google\Ads\GoogleAds\Lib\V14\GoogleAdsClientBuilder;
+use Google\Ads\GoogleAds\Lib\V14\GoogleAdsException;
 use Google\Ads\GoogleAds\Util\FieldMasks;
-use Google\Ads\GoogleAds\Util\V12\ResourceNames;
-use Google\Ads\GoogleAds\V12\Enums\ManagerLinkStatusEnum\ManagerLinkStatus;
-use Google\Ads\GoogleAds\V12\Errors\GoogleAdsError;
-use Google\Ads\GoogleAds\V12\Resources\CustomerClientLink;
-use Google\Ads\GoogleAds\V12\Resources\CustomerManagerLink;
-use Google\Ads\GoogleAds\V12\Services\CustomerClientLinkOperation;
-use Google\Ads\GoogleAds\V12\Services\CustomerManagerLinkOperation;
+use Google\Ads\GoogleAds\Util\V14\ResourceNames;
+use Google\Ads\GoogleAds\V14\Enums\ManagerLinkStatusEnum\ManagerLinkStatus;
+use Google\Ads\GoogleAds\V14\Errors\GoogleAdsError;
+use Google\Ads\GoogleAds\V14\Resources\CustomerClientLink;
+use Google\Ads\GoogleAds\V14\Resources\CustomerManagerLink;
+use Google\Ads\GoogleAds\V14\Services\CustomerClientLinkOperation;
+use Google\Ads\GoogleAds\V14\Services\CustomerManagerLinkOperation;
+use Google\Ads\GoogleAds\V14\Services\MutateCustomerClientLinkRequest;
+use Google\Ads\GoogleAds\V14\Services\MutateCustomerManagerLinkRequest;
+use Google\Ads\GoogleAds\V14\Services\SearchGoogleAdsRequest;
 use Google\ApiCore\ApiException;
 
 /**
@@ -148,8 +151,10 @@ class LinkManagerToClient
         // Issues a mutate request to create the customer client link.
         $customerClientLinkServiceClient = $googleAdsClient->getCustomerClientLinkServiceClient();
         $response = $customerClientLinkServiceClient->mutateCustomerClientLink(
-            $managerCustomerId,
-            $customerClientLinkOperation
+            MutateCustomerClientLinkRequest::build(
+                $managerCustomerId,
+                $customerClientLinkOperation
+            )
         );
 
         // Prints the result.
@@ -190,9 +195,7 @@ class LinkManagerToClient
         // Issues a search request by specifying the page size.
         $googleAdsServiceClient = $googleAdsClient->getGoogleAdsServiceClient();
         $response = $googleAdsServiceClient->search(
-            $managerCustomerId,
-            $query,
-            ['pageSize' => self::PAGE_SIZE]
+            SearchGoogleAdsRequest::build($managerCustomerId, $query)->setPageSize(self::PAGE_SIZE)
         );
 
         // Gets the ID and resource name associated to the manager link found.
@@ -247,8 +250,10 @@ class LinkManagerToClient
         $customerManagerLinkServiceClient =
             $googleAdsClient->getCustomerManagerLinkServiceClient();
         $response = $customerManagerLinkServiceClient->mutateCustomerManagerLink(
-            $clientCustomerId,
-            [$customerManagerLinkOperation]
+            MutateCustomerManagerLinkRequest::build(
+                $clientCustomerId,
+                [$customerManagerLinkOperation]
+            )
         );
 
         // Prints the result.
@@ -284,6 +289,12 @@ class LinkManagerToClient
             ->withOAuth2Credential($oAuth2Credential)
             // Overrides the login customer ID with the given one.
             ->withLoginCustomerId($loginCustomerId)
+            // We set this value to true to show how to use GAPIC v2 source code. You can remove the
+            // below line if you wish to use the old-style source code. Note that in that case, you
+            // probably need to modify some parts of the code below to make it work.
+            // For more information, see
+            // https://developers.devsite.corp.google.com/google-ads/api/docs/client-libs/php/gapic.
+            ->usingGapicV2Source(true)
             ->build();
     }
 }

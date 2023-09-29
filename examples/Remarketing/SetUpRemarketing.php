@@ -25,27 +25,38 @@ use Google\Ads\GoogleAds\Examples\Utils\ArgumentNames;
 use Google\Ads\GoogleAds\Examples\Utils\ArgumentParser;
 use Google\Ads\GoogleAds\Examples\Utils\Helper;
 use Google\Ads\GoogleAds\Lib\OAuth2TokenBuilder;
-use Google\Ads\GoogleAds\Lib\V12\GoogleAdsClient;
-use Google\Ads\GoogleAds\Lib\V12\GoogleAdsClientBuilder;
-use Google\Ads\GoogleAds\Lib\V12\GoogleAdsException;
+use Google\Ads\GoogleAds\Lib\V14\GoogleAdsClient;
+use Google\Ads\GoogleAds\Lib\V14\GoogleAdsClientBuilder;
+use Google\Ads\GoogleAds\Lib\V14\GoogleAdsException;
 use Google\Ads\GoogleAds\Util\FieldMasks;
-use Google\Ads\GoogleAds\Util\V12\ResourceNames;
-use Google\Ads\GoogleAds\V12\Common\ExpressionRuleUserListInfo;
-use Google\Ads\GoogleAds\V12\Common\RuleBasedUserListInfo;
-use Google\Ads\GoogleAds\V12\Common\UserListInfo;
-use Google\Ads\GoogleAds\V12\Common\UserListRuleInfo;
-use Google\Ads\GoogleAds\V12\Common\UserListRuleItemGroupInfo;
-use Google\Ads\GoogleAds\V12\Common\UserListRuleItemInfo;
-use Google\Ads\GoogleAds\V12\Common\UserListStringRuleItemInfo;
-use Google\Ads\GoogleAds\V12\Enums\UserListMembershipStatusEnum\UserListMembershipStatus;
-use Google\Ads\GoogleAds\V12\Enums\UserListPrepopulationStatusEnum\UserListPrepopulationStatus;
-use Google\Ads\GoogleAds\V12\Enums\UserListStringRuleItemOperatorEnum\UserListStringRuleItemOperator;
-use Google\Ads\GoogleAds\V12\Resources\AdGroupCriterion;
-use Google\Ads\GoogleAds\V12\Resources\CampaignCriterion;
-use Google\Ads\GoogleAds\V12\Resources\UserList;
-use Google\Ads\GoogleAds\V12\Services\AdGroupCriterionOperation;
-use Google\Ads\GoogleAds\V12\Services\CampaignCriterionOperation;
-use Google\Ads\GoogleAds\V12\Services\UserListOperation;
+use Google\Ads\GoogleAds\Util\V14\ResourceNames;
+use Google\Ads\GoogleAds\V14\Common\FlexibleRuleOperandInfo;
+use Google\Ads\GoogleAds\V14\Common\FlexibleRuleUserListInfo;
+use Google\Ads\GoogleAds\V14\Common\RuleBasedUserListInfo;
+use Google\Ads\GoogleAds\V14\Common\UserListInfo;
+use Google\Ads\GoogleAds\V14\Common\UserListRuleInfo;
+use Google\Ads\GoogleAds\V14\Common\UserListRuleItemGroupInfo;
+use Google\Ads\GoogleAds\V14\Common\UserListRuleItemInfo;
+use Google\Ads\GoogleAds\V14\Common\UserListStringRuleItemInfo;
+use Google\Ads\GoogleAds\V14\Enums\UserListFlexibleRuleOperatorEnum\UserListFlexibleRuleOperator;
+use Google\Ads\GoogleAds\V14\Enums\UserListMembershipStatusEnum\UserListMembershipStatus;
+use Google\Ads\GoogleAds\V14\Enums\UserListPrepopulationStatusEnum\UserListPrepopulationStatus;
+use Google\Ads\GoogleAds\V14\Enums\UserListStringRuleItemOperatorEnum\UserListStringRuleItemOperator;
+use Google\Ads\GoogleAds\V14\Errors\GoogleAdsError;
+use Google\Ads\GoogleAds\V14\Resources\AdGroupCriterion;
+use Google\Ads\GoogleAds\V14\Resources\CampaignCriterion;
+use Google\Ads\GoogleAds\V14\Resources\UserList;
+use Google\Ads\GoogleAds\V14\Services\AdGroupCriterionOperation;
+use Google\Ads\GoogleAds\V14\Services\CampaignCriterionOperation;
+use Google\Ads\GoogleAds\V14\Services\GoogleAdsRow;
+use Google\Ads\GoogleAds\V14\Services\MutateAdGroupCriteriaRequest;
+use Google\Ads\GoogleAds\V14\Services\MutateAdGroupCriteriaResponse;
+use Google\Ads\GoogleAds\V14\Services\MutateCampaignCriteriaRequest;
+use Google\Ads\GoogleAds\V14\Services\MutateCampaignCriteriaResponse;
+use Google\Ads\GoogleAds\V14\Services\MutateUserListsRequest;
+use Google\Ads\GoogleAds\V14\Services\MutateUserListsResponse;
+use Google\Ads\GoogleAds\V14\Services\SearchGoogleAdsRequest;
+use Google\Ads\GoogleAds\V14\Services\UserListOperation;
 use Google\ApiCore\ApiException;
 
 /**
@@ -88,6 +99,12 @@ class SetUpRemarketing
         $googleAdsClient = (new GoogleAdsClientBuilder())
             ->fromFile()
             ->withOAuth2Credential($oAuth2Credential)
+            // We set this value to true to show how to use GAPIC v2 source code. You can remove the
+            // below line if you wish to use the old-style source code. Note that in that case, you
+            // probably need to modify some parts of the code below to make it work.
+            // For more information, see
+            // https://developers.devsite.corp.google.com/google-ads/api/docs/client-libs/php/gapic.
+            ->usingGapicV2Source(true)
             ->build();
 
         try {
@@ -192,15 +209,25 @@ class SetUpRemarketing
         ]);
 
         // Specifies that the user list targets visitors of a page based on the provided rule.
-        $expressionRuleUserListInfo = new ExpressionRuleUserListInfo([
-            'rule' => new UserListRuleInfo([
-                'rule_item_groups' => [new UserListRuleItemGroupInfo(['rule_items' => [$rule]])]
-            ])
+        $flexibleRuleUserListInfo = new FlexibleRuleUserListInfo([
+            'inclusive_rule_operator' => UserListFlexibleRuleOperator::PBAND,
+            // Inclusive operands are joined together with the specified inclusive rule operator.
+            'inclusive_operands' => [
+                new FlexibleRuleOperandInfo([
+                    'rule' => new UserListRuleInfo([
+                        'rule_item_groups' =>
+                            [new UserListRuleItemGroupInfo(['rule_items' => [$rule]])]
+                    ]),
+                    // Optionally add a lookback window for this rule, in days.
+                    'lookback_window_days' => 7
+                ])
+            ],
+            'exclusive_operands' => []
         ]);
 
         // Defines a representation of a user list that is generated by a rule.
         $ruleBasedUserListInfo = new RuleBasedUserListInfo([
-            'expression_rule_user_list' => $expressionRuleUserListInfo,
+            'flexible_rule_user_list' => $flexibleRuleUserListInfo,
             // Optional: To include past users in the user list, set the prepopulation_status to
             // REQUESTED.
             'prepopulation_status' => UserListPrepopulationStatus::REQUESTED
@@ -222,7 +249,9 @@ class SetUpRemarketing
         // Issues a mutate request to add a user list.
         $userListServiceClient = $googleAdsClient->getUserListServiceClient();
         /** @var MutateUserListsResponse $userListResponse */
-        $userListResponse = $userListServiceClient->mutateUserLists($customerId, [$operation]);
+        $userListResponse = $userListServiceClient->mutateUserLists(
+            MutateUserListsRequest::build($customerId, [$operation])
+        );
 
         $userListResourceName = $userListResponse->getResults()[0]->getResourceName();
         printf("Created user list with resource name '%s'.%s", $userListResourceName, PHP_EOL);
@@ -261,8 +290,7 @@ class SetUpRemarketing
         $adGroupCriterionServiceClient = $googleAdsClient->getAdGroupCriterionServiceClient();
         /** @var MutateAdGroupCriteriaResponse $adGroupCriterionResponse */
         $adGroupCriterionResponse = $adGroupCriterionServiceClient->mutateAdGroupCriteria(
-            $customerId,
-            [$operation]
+            MutateAdGroupCriteriaRequest::build($customerId, [$operation])
         );
 
         $adGroupCriterionResourceName =
@@ -312,8 +340,7 @@ class SetUpRemarketing
         $adGroupCriterionServiceClient = $googleAdsClient->getAdGroupCriterionServiceClient();
         /** @var MutateAdGroupCriteriaResponse $adGroupCriteriaResponse */
         $adGroupCriteriaResponse = $adGroupCriterionServiceClient->mutateAdGroupCriteria(
-            $customerId,
-            [$operation]
+            MutateAdGroupCriteriaRequest::build($customerId, [$operation])
         );
 
         printf(
@@ -353,11 +380,10 @@ class SetUpRemarketing
         }
 
         // Issues a mutate request to remove the ad group criteria.
-        $adGroupCriteriaServiceClient = $googleAdsClient->getAdGroupCriterionServiceClient();
+        $adGroupCriterionServiceClient = $googleAdsClient->getAdGroupCriterionServiceClient();
         /** @var MutateAdGroupCriteriaResponse $adGroupCriteriaResponse */
-        $adGroupCriteriaResponse = $adGroupCriteriaServiceClient->mutateAdGroupCriteria(
-            $customerId,
-            $removeOperations
+        $adGroupCriteriaResponse = $adGroupCriterionServiceClient->mutateAdGroupCriteria(
+            MutateAdGroupCriteriaRequest::build($customerId, $removeOperations)
         );
 
         foreach ($adGroupCriteriaResponse->getResults() as $adGroupCriteriaResult) {
@@ -398,9 +424,7 @@ class SetUpRemarketing
 
         // Issues the search request.
         $response = $googleAdsServiceClient->search(
-            $customerId,
-            $query,
-            ['pageSize' => self::PAGE_SIZE]
+            SearchGoogleAdsRequest::build($customerId, $query)->setPageSize(self::PAGE_SIZE)
         );
 
         $userListCriteria = [];
@@ -453,8 +477,7 @@ class SetUpRemarketing
         $campaignCriterionServiceClient = $googleAdsClient->getCampaignCriterionServiceClient();
         /** @var MutateCampaignCriteriaResponse $campaignCriteriaResponse */
         $campaignCriteriaResponse = $campaignCriterionServiceClient->mutateCampaignCriteria(
-            $customerId,
-            [$operation]
+            MutateCampaignCriteriaRequest::build($customerId, [$operation])
         );
 
         $campaignCriterionResourceName =
@@ -503,8 +526,7 @@ class SetUpRemarketing
         $campaignCriterionServiceClient = $googleAdsClient->getCampaignCriterionServiceClient();
         /** @var MutateCampaignCriteriaResponse $campaignCriteriaResponse */
         $campaignCriteriaResponse = $campaignCriterionServiceClient->mutateCampaignCriteria(
-            $customerId,
-            [$operation]
+            MutateCampaignCriteriaRequest::build($customerId, [$operation])
         );
 
         printf(

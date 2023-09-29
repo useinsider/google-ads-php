@@ -25,16 +25,18 @@ use GetOpt\GetOpt;
 use Google\Ads\GoogleAds\Examples\Utils\ArgumentNames;
 use Google\Ads\GoogleAds\Examples\Utils\ArgumentParser;
 use Google\Ads\GoogleAds\Lib\OAuth2TokenBuilder;
-use Google\Ads\GoogleAds\Lib\V12\GoogleAdsClient;
-use Google\Ads\GoogleAds\Lib\V12\GoogleAdsClientBuilder;
-use Google\Ads\GoogleAds\Lib\V12\GoogleAdsException;
+use Google\Ads\GoogleAds\Lib\V14\GoogleAdsClient;
+use Google\Ads\GoogleAds\Lib\V14\GoogleAdsClientBuilder;
+use Google\Ads\GoogleAds\Lib\V14\GoogleAdsException;
 use Google\Ads\GoogleAds\Util\FieldMasks;
-use Google\Ads\GoogleAds\V12\Enums\ChangeClientTypeEnum\ChangeClientType;
-use Google\Ads\GoogleAds\V12\Enums\ChangeEventResourceTypeEnum\ChangeEventResourceType;
-use Google\Ads\GoogleAds\V12\Enums\ResourceChangeOperationEnum\ResourceChangeOperation;
-use Google\Ads\GoogleAds\V12\Errors\GoogleAdsError;
-use Google\Ads\GoogleAds\V12\Services\GoogleAdsRow;
+use Google\Ads\GoogleAds\V14\Enums\ChangeClientTypeEnum\ChangeClientType;
+use Google\Ads\GoogleAds\V14\Enums\ChangeEventResourceTypeEnum\ChangeEventResourceType;
+use Google\Ads\GoogleAds\V14\Enums\ResourceChangeOperationEnum\ResourceChangeOperation;
+use Google\Ads\GoogleAds\V14\Errors\GoogleAdsError;
+use Google\Ads\GoogleAds\V14\Services\GoogleAdsRow;
+use Google\Ads\GoogleAds\V14\Services\SearchGoogleAdsRequest;
 use Google\ApiCore\ApiException;
+use Google\Protobuf\Internal\Message;
 use Google\Protobuf\Internal\RepeatedField;
 
 /**
@@ -61,6 +63,12 @@ class GetChangeDetails
         // OAuth2 credentials above.
         $googleAdsClient = (new GoogleAdsClientBuilder())->fromFile()
             ->withOAuth2Credential($oAuth2Credential)
+            // We set this value to true to show how to use GAPIC v2 source code. You can remove the
+            // below line if you wish to use the old-style source code. Note that in that case, you
+            // probably need to modify some parts of the code below to make it work.
+            // For more information, see
+            // https://developers.devsite.corp.google.com/google-ads/api/docs/client-libs/php/gapic.
+            ->usingGapicV2Source(true)
             ->build();
 
         try {
@@ -135,8 +143,9 @@ class GetChangeDetails
         // The page size is superfluous with the default limit set above, but it's
         // shown here since it's a good practice to use a reasonable page size when
         // you set a higher limit.
-        $response =
-            $googleAdsServiceClient->search($customerId, $query, ['pageSize' => self::PAGE_SIZE]);
+        $response = $googleAdsServiceClient->search(
+            SearchGoogleAdsRequest::build($customerId, $query)->setPageSize(self::PAGE_SIZE)
+        );
 
         // Iterates over all rows in all pages and prints the requested field values for
         // the change event in each row.
@@ -261,10 +270,10 @@ class GetChangeDetails
                     FieldMasks::getFieldValue($path, $newResourceEntity, true)
                 );
                 if ($resourceChangeOperation === ResourceChangeOperation::CREATE) {
-                    printf("'$path' set to '%s'.%s", $newValueStr, PHP_EOL);
+                    printf("\t'$path' set to '%s'.%s", $newValueStr, PHP_EOL);
                 } elseif ($resourceChangeOperation === ResourceChangeOperation::UPDATE) {
                     printf(
-                        "'$path' changed from '%s' to '%s'.%s",
+                        "\t'$path' changed from '%s' to '%s'.%s",
                         self::convertToString(
                             FieldMasks::getFieldValue($path, $oldResourceEntity, true)
                         ),
@@ -291,7 +300,12 @@ class GetChangeDetails
             return $value ? 'true' : 'false';
         } elseif (gettype($value) === 'object') {
             if (get_class($value) === RepeatedField::class) {
-                return json_encode(iterator_to_array($value->getIterator()));
+                $strValues = [];
+                foreach (iterator_to_array($value->getIterator()) as $element) {
+                    /** @type Message $element */
+                    $strValues[] = $element->serializeToJsonString();
+                }
+                return '[' . implode(',', $strValues) . ']';
             }
             return json_encode($value);
         } else {

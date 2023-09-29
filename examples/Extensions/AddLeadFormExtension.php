@@ -25,24 +25,26 @@ use Google\Ads\GoogleAds\Examples\Utils\ArgumentNames;
 use Google\Ads\GoogleAds\Examples\Utils\ArgumentParser;
 use Google\Ads\GoogleAds\Examples\Utils\Helper;
 use Google\Ads\GoogleAds\Lib\OAuth2TokenBuilder;
-use Google\Ads\GoogleAds\Lib\V12\GoogleAdsClient;
-use Google\Ads\GoogleAds\Lib\V12\GoogleAdsClientBuilder;
-use Google\Ads\GoogleAds\Lib\V12\GoogleAdsException;
-use Google\Ads\GoogleAds\Util\V12\ResourceNames;
-use Google\Ads\GoogleAds\V12\Common\LeadFormAsset;
-use Google\Ads\GoogleAds\V12\Common\LeadFormDeliveryMethod;
-use Google\Ads\GoogleAds\V12\Common\LeadFormField;
-use Google\Ads\GoogleAds\V12\Common\LeadFormSingleChoiceAnswers;
-use Google\Ads\GoogleAds\V12\Common\WebhookDelivery;
-use Google\Ads\GoogleAds\V12\Enums\AssetFieldTypeEnum\AssetFieldType;
-use Google\Ads\GoogleAds\V12\Enums\LeadFormCallToActionTypeEnum\LeadFormCallToActionType;
-use Google\Ads\GoogleAds\V12\Enums\LeadFormFieldUserInputTypeEnum\LeadFormFieldUserInputType;
-use Google\Ads\GoogleAds\V12\Enums\LeadFormPostSubmitCallToActionTypeEnum\LeadFormPostSubmitCallToActionType;
-use Google\Ads\GoogleAds\V12\Errors\GoogleAdsError;
-use Google\Ads\GoogleAds\V12\Resources\Asset;
-use Google\Ads\GoogleAds\V12\Resources\CampaignAsset;
-use Google\Ads\GoogleAds\V12\Services\AssetOperation;
-use Google\Ads\GoogleAds\V12\Services\CampaignAssetOperation;
+use Google\Ads\GoogleAds\Lib\V14\GoogleAdsClient;
+use Google\Ads\GoogleAds\Lib\V14\GoogleAdsClientBuilder;
+use Google\Ads\GoogleAds\Lib\V14\GoogleAdsException;
+use Google\Ads\GoogleAds\Util\V14\ResourceNames;
+use Google\Ads\GoogleAds\V14\Common\LeadFormAsset;
+use Google\Ads\GoogleAds\V14\Common\LeadFormDeliveryMethod;
+use Google\Ads\GoogleAds\V14\Common\LeadFormField;
+use Google\Ads\GoogleAds\V14\Common\LeadFormSingleChoiceAnswers;
+use Google\Ads\GoogleAds\V14\Common\WebhookDelivery;
+use Google\Ads\GoogleAds\V14\Enums\AssetFieldTypeEnum\AssetFieldType;
+use Google\Ads\GoogleAds\V14\Enums\LeadFormCallToActionTypeEnum\LeadFormCallToActionType;
+use Google\Ads\GoogleAds\V14\Enums\LeadFormFieldUserInputTypeEnum\LeadFormFieldUserInputType;
+use Google\Ads\GoogleAds\V14\Enums\LeadFormPostSubmitCallToActionTypeEnum\LeadFormPostSubmitCallToActionType;
+use Google\Ads\GoogleAds\V14\Errors\GoogleAdsError;
+use Google\Ads\GoogleAds\V14\Resources\Asset;
+use Google\Ads\GoogleAds\V14\Resources\CampaignAsset;
+use Google\Ads\GoogleAds\V14\Services\AssetOperation;
+use Google\Ads\GoogleAds\V14\Services\CampaignAssetOperation;
+use Google\Ads\GoogleAds\V14\Services\MutateAssetsRequest;
+use Google\Ads\GoogleAds\V14\Services\MutateCampaignAssetsRequest;
 use Google\ApiCore\ApiException;
 
 /**
@@ -70,6 +72,12 @@ class AddLeadFormExtension
         // OAuth2 credentials above.
         $googleAdsClient = (new GoogleAdsClientBuilder())->fromFile()
             ->withOAuth2Credential($oAuth2Credential)
+            // We set this value to true to show how to use GAPIC v2 source code. You can remove the
+            // below line if you wish to use the old-style source code. Note that in that case, you
+            // probably need to modify some parts of the code below to make it work.
+            // For more information, see
+            // https://developers.devsite.corp.google.com/google-ads/api/docs/client-libs/php/gapic.
+            ->usingGapicV2Source(true)
             ->build();
 
         try {
@@ -198,7 +206,9 @@ class AddLeadFormExtension
 
         // Issues a mutate request to add the asset and prints its information.
         $assetServiceClient = $googleAdsClient->getAssetServiceClient();
-        $response = $assetServiceClient->mutateAssets($customerId, [$assetOperation]);
+        $response = $assetServiceClient->mutateAssets(
+            MutateAssetsRequest::build($customerId, [$assetOperation])
+        );
         $assetResourceName = $response->getResults()[0]->getResourceName();
         printf("Created an asset with resource name: '%s'.%s", $assetResourceName, PHP_EOL);
 
@@ -235,8 +245,7 @@ class AddLeadFormExtension
         // Issues a mutate request to add the campaign asset and prints its information.
         $campaignAssetServiceClient = $googleAdsClient->getCampaignAssetServiceClient();
         $response = $campaignAssetServiceClient->mutateCampaignAssets(
-            $customerId,
-            [$campaignAssetOperation]
+            MutateCampaignAssetsRequest::build($customerId, [$campaignAssetOperation])
         );
         printf(
             "Created a campaign asset with resource name '%s' for campaign ID %d.%s",

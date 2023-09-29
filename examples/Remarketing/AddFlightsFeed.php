@@ -26,22 +26,25 @@ use Google\Ads\GoogleAds\Examples\Utils\ArgumentParser;
 use Google\Ads\GoogleAds\Examples\Utils\Feeds;
 use Google\Ads\GoogleAds\Examples\Utils\Helper;
 use Google\Ads\GoogleAds\Lib\OAuth2TokenBuilder;
-use Google\Ads\GoogleAds\Lib\V12\GoogleAdsClient;
-use Google\Ads\GoogleAds\Lib\V12\GoogleAdsClientBuilder;
-use Google\Ads\GoogleAds\Lib\V12\GoogleAdsException;
-use Google\Ads\GoogleAds\V12\Enums\FeedAttributeTypeEnum\FeedAttributeType;
-use Google\Ads\GoogleAds\V12\Enums\FlightPlaceholderFieldEnum\FlightPlaceholderField;
-use Google\Ads\GoogleAds\V12\Enums\PlaceholderTypeEnum\PlaceholderType;
-use Google\Ads\GoogleAds\V12\Errors\GoogleAdsError;
-use Google\Ads\GoogleAds\V12\Resources\AttributeFieldMapping;
-use Google\Ads\GoogleAds\V12\Resources\Feed;
-use Google\Ads\GoogleAds\V12\Resources\FeedAttribute;
-use Google\Ads\GoogleAds\V12\Resources\FeedItem;
-use Google\Ads\GoogleAds\V12\Resources\FeedItemAttributeValue;
-use Google\Ads\GoogleAds\V12\Resources\FeedMapping;
-use Google\Ads\GoogleAds\V12\Services\FeedItemOperation;
-use Google\Ads\GoogleAds\V12\Services\FeedMappingOperation;
-use Google\Ads\GoogleAds\V12\Services\FeedOperation;
+use Google\Ads\GoogleAds\Lib\V14\GoogleAdsClient;
+use Google\Ads\GoogleAds\Lib\V14\GoogleAdsClientBuilder;
+use Google\Ads\GoogleAds\Lib\V14\GoogleAdsException;
+use Google\Ads\GoogleAds\V14\Enums\FeedAttributeTypeEnum\FeedAttributeType;
+use Google\Ads\GoogleAds\V14\Enums\FlightPlaceholderFieldEnum\FlightPlaceholderField;
+use Google\Ads\GoogleAds\V14\Enums\PlaceholderTypeEnum\PlaceholderType;
+use Google\Ads\GoogleAds\V14\Errors\GoogleAdsError;
+use Google\Ads\GoogleAds\V14\Resources\AttributeFieldMapping;
+use Google\Ads\GoogleAds\V14\Resources\Feed;
+use Google\Ads\GoogleAds\V14\Resources\FeedAttribute;
+use Google\Ads\GoogleAds\V14\Resources\FeedItem;
+use Google\Ads\GoogleAds\V14\Resources\FeedItemAttributeValue;
+use Google\Ads\GoogleAds\V14\Resources\FeedMapping;
+use Google\Ads\GoogleAds\V14\Services\FeedItemOperation;
+use Google\Ads\GoogleAds\V14\Services\FeedMappingOperation;
+use Google\Ads\GoogleAds\V14\Services\FeedOperation;
+use Google\Ads\GoogleAds\V14\Services\MutateFeedItemsRequest;
+use Google\Ads\GoogleAds\V14\Services\MutateFeedMappingsRequest;
+use Google\Ads\GoogleAds\V14\Services\MutateFeedsRequest;
 use Google\ApiCore\ApiException;
 
 /** Adds a flights feed, creates the associated feed mapping, and adds a feed item. */
@@ -65,6 +68,12 @@ class AddFlightsFeed
         $googleAdsClient = (new GoogleAdsClientBuilder())
             ->fromFile()
             ->withOAuth2Credential($oAuth2Credential)
+            // We set this value to true to show how to use GAPIC v2 source code. You can remove the
+            // below line if you wish to use the old-style source code. Note that in that case, you
+            // probably need to modify some parts of the code below to make it work.
+            // For more information, see
+            // https://developers.devsite.corp.google.com/google-ads/api/docs/client-libs/php/gapic.
+            ->usingGapicV2Source(true)
             ->build();
 
         try {
@@ -182,7 +191,8 @@ class AddFlightsFeed
 
         // Issues a mutate request to add the feed and print some information.
         $feedServiceClient = $googleAdsClient->getFeedServiceClient();
-        $response = $feedServiceClient->mutateFeeds($customerId, [$operation]);
+        $response =
+            $feedServiceClient->mutateFeeds(MutateFeedsRequest::build($customerId, [$operation]));
         $feedResourceName = $response->getResults()[0]->getResourceName();
         printf("Feed with resource name '%s' was created.%s", $feedResourceName, PHP_EOL);
 
@@ -250,7 +260,9 @@ class AddFlightsFeed
 
         // Issues a mutate request to add the feed mapping and print some information.
         $feedMappingServiceClient = $googleAdsClient->getFeedMappingServiceClient();
-        $response = $feedMappingServiceClient->mutateFeedMappings($customerId, [$operation]);
+        $response = $feedMappingServiceClient->mutateFeedMappings(
+            MutateFeedMappingsRequest::build($customerId, [$operation])
+        );
         printf(
             "Feed mapping with resource name '%s' was created.%s",
             $response->getResults()[0]->getResourceName(),
@@ -322,7 +334,9 @@ class AddFlightsFeed
 
         // Issues a mutate request to add the feed item and print some information.
         $feedItemServiceClient = $googleAdsClient->getFeedItemServiceClient();
-        $response = $feedItemServiceClient->mutateFeedItems($customerId, [$operation]);
+        $response = $feedItemServiceClient->mutateFeedItems(
+            MutateFeedItemsRequest::build($customerId, [$operation])
+        );
         printf(
             "Feed item with resource name '%s' was created.%s",
             $response->getResults()[0]->getResourceName(),

@@ -24,18 +24,20 @@ use GetOpt\GetOpt;
 use Google\Ads\GoogleAds\Examples\Utils\ArgumentNames;
 use Google\Ads\GoogleAds\Examples\Utils\ArgumentParser;
 use Google\Ads\GoogleAds\Lib\OAuth2TokenBuilder;
-use Google\Ads\GoogleAds\Lib\V12\GoogleAdsClient;
-use Google\Ads\GoogleAds\Lib\V12\GoogleAdsClientBuilder;
-use Google\Ads\GoogleAds\Lib\V12\GoogleAdsException;
-use Google\Ads\GoogleAds\V12\Common\HotelCalloutAsset;
-use Google\Ads\GoogleAds\V12\Enums\AssetFieldTypeEnum\AssetFieldType;
-use Google\Ads\GoogleAds\V12\Errors\GoogleAdsError;
-use Google\Ads\GoogleAds\V12\Resources\Asset;
-use Google\Ads\GoogleAds\V12\Resources\CustomerAsset;
-use Google\Ads\GoogleAds\V12\Services\AssetOperation;
-use Google\Ads\GoogleAds\V12\Services\CustomerAssetOperation;
-use Google\Ads\GoogleAds\V12\Services\MutateAssetResult;
-use Google\Ads\GoogleAds\V12\Services\MutateCustomerAssetResult;
+use Google\Ads\GoogleAds\Lib\V14\GoogleAdsClient;
+use Google\Ads\GoogleAds\Lib\V14\GoogleAdsClientBuilder;
+use Google\Ads\GoogleAds\Lib\V14\GoogleAdsException;
+use Google\Ads\GoogleAds\V14\Common\HotelCalloutAsset;
+use Google\Ads\GoogleAds\V14\Enums\AssetFieldTypeEnum\AssetFieldType;
+use Google\Ads\GoogleAds\V14\Errors\GoogleAdsError;
+use Google\Ads\GoogleAds\V14\Resources\Asset;
+use Google\Ads\GoogleAds\V14\Resources\CustomerAsset;
+use Google\Ads\GoogleAds\V14\Services\AssetOperation;
+use Google\Ads\GoogleAds\V14\Services\CustomerAssetOperation;
+use Google\Ads\GoogleAds\V14\Services\MutateAssetResult;
+use Google\Ads\GoogleAds\V14\Services\MutateAssetsRequest;
+use Google\Ads\GoogleAds\V14\Services\MutateCustomerAssetResult;
+use Google\Ads\GoogleAds\V14\Services\MutateCustomerAssetsRequest;
 use Google\ApiCore\ApiException;
 
 /**
@@ -65,6 +67,12 @@ class AddHotelCallout
         // OAuth2 credentials above.
         $googleAdsClient = (new GoogleAdsClientBuilder())->fromFile()
             ->withOAuth2Credential($oAuth2Credential)
+            // We set this value to true to show how to use GAPIC v2 source code. You can remove the
+            // below line if you wish to use the old-style source code. Note that in that case, you
+            // probably need to modify some parts of the code below to make it work.
+            // For more information, see
+            // https://developers.devsite.corp.google.com/google-ads/api/docs/client-libs/php/gapic.
+            ->usingGapicV2Source(true)
             ->build();
 
         try {
@@ -149,7 +157,9 @@ class AddHotelCallout
 
         // Issues a mutate request to add the assets and print its information.
         $assetServiceClient = $googleAdsClient->getAssetServiceClient();
-        $response = $assetServiceClient->mutateAssets($customerId, $assetOperations);
+        $response = $assetServiceClient->mutateAssets(
+            MutateAssetsRequest::build($customerId, $assetOperations)
+        );
         $createdAssetResourceNames = [];
         foreach ($response->getResults() as $result) {
             /** @var MutateAssetResult $result */
@@ -188,8 +198,7 @@ class AddHotelCallout
         // Issues a mutate request to add the customer assets and prints its information.
         $customerAssetServiceClient = $googleAdsClient->getCustomerAssetServiceClient();
         $response = $customerAssetServiceClient->mutateCustomerAssets(
-            $customerId,
-            $customerAssetOperations
+            MutateCustomerAssetsRequest::build($customerId, $customerAssetOperations)
         );
         foreach ($response->getResults() as $result) {
             /** @var MutateCustomerAssetResult $result */
