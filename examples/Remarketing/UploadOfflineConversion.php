@@ -24,15 +24,16 @@ use GetOpt\GetOpt;
 use Google\Ads\GoogleAds\Examples\Utils\ArgumentNames;
 use Google\Ads\GoogleAds\Examples\Utils\ArgumentParser;
 use Google\Ads\GoogleAds\Lib\OAuth2TokenBuilder;
-use Google\Ads\GoogleAds\Lib\V12\GoogleAdsClient;
-use Google\Ads\GoogleAds\Lib\V12\GoogleAdsClientBuilder;
-use Google\Ads\GoogleAds\Lib\V12\GoogleAdsException;
-use Google\Ads\GoogleAds\Util\V12\ResourceNames;
-use Google\Ads\GoogleAds\V12\Errors\GoogleAdsError;
-use Google\Ads\GoogleAds\V12\Services\ClickConversion;
-use Google\Ads\GoogleAds\V12\Services\ClickConversionResult;
-use Google\Ads\GoogleAds\V12\Services\CustomVariable;
-use Google\Ads\GoogleAds\V12\Services\UploadClickConversionsResponse;
+use Google\Ads\GoogleAds\Lib\V14\GoogleAdsClient;
+use Google\Ads\GoogleAds\Lib\V14\GoogleAdsClientBuilder;
+use Google\Ads\GoogleAds\Lib\V14\GoogleAdsException;
+use Google\Ads\GoogleAds\Util\V14\ResourceNames;
+use Google\Ads\GoogleAds\V14\Errors\GoogleAdsError;
+use Google\Ads\GoogleAds\V14\Services\ClickConversion;
+use Google\Ads\GoogleAds\V14\Services\ClickConversionResult;
+use Google\Ads\GoogleAds\V14\Services\CustomVariable;
+use Google\Ads\GoogleAds\V14\Services\UploadClickConversionsRequest;
+use Google\Ads\GoogleAds\V14\Services\UploadClickConversionsResponse;
 use Google\ApiCore\ApiException;
 
 /**
@@ -85,6 +86,12 @@ class UploadOfflineConversion
         $googleAdsClient = (new GoogleAdsClientBuilder())
             ->fromFile()
             ->withOAuth2Credential($oAuth2Credential)
+            // We set this value to true to show how to use GAPIC v2 source code. You can remove the
+            // below line if you wish to use the old-style source code. Note that in that case, you
+            // probably need to modify some parts of the code below to make it work.
+            // For more information, see
+            // https://developers.devsite.corp.google.com/google-ads/api/docs/client-libs/php/gapic.
+            ->usingGapicV2Source(true)
             ->build();
 
         try {
@@ -214,9 +221,7 @@ class UploadOfflineConversion
         $conversionUploadServiceClient = $googleAdsClient->getConversionUploadServiceClient();
         /** @var UploadClickConversionsResponse $response */
         $response = $conversionUploadServiceClient->uploadClickConversions(
-            $customerId,
-            [$clickConversion],
-            true
+            UploadClickConversionsRequest::build($customerId, [$clickConversion], true)
         );
 
         // Prints the status message if any partial failure error is returned.

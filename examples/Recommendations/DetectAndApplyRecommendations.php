@@ -23,15 +23,16 @@ require __DIR__ . '/../../vendor/autoload.php';
 use GetOpt\GetOpt;
 use Google\Ads\GoogleAds\Examples\Utils\ArgumentNames;
 use Google\Ads\GoogleAds\Examples\Utils\ArgumentParser;
-use Google\Ads\GoogleAds\Lib\V12\GoogleAdsClient;
-use Google\Ads\GoogleAds\Lib\V12\GoogleAdsClientBuilder;
-use Google\Ads\GoogleAds\Lib\V12\GoogleAdsException;
+use Google\Ads\GoogleAds\Lib\V14\GoogleAdsClient;
+use Google\Ads\GoogleAds\Lib\V14\GoogleAdsClientBuilder;
+use Google\Ads\GoogleAds\Lib\V14\GoogleAdsException;
 use Google\Ads\GoogleAds\Lib\OAuth2TokenBuilder;
-use Google\Ads\GoogleAds\Lib\V12\GoogleAdsServerStreamDecorator;
-use Google\Ads\GoogleAds\V12\Errors\GoogleAdsError;
-use Google\Ads\GoogleAds\V12\Services\ApplyRecommendationOperation;
-use Google\Ads\GoogleAds\V12\Services\ApplyRecommendationResult;
-use Google\Ads\GoogleAds\V12\Services\GoogleAdsRow;
+use Google\Ads\GoogleAds\Lib\V14\GoogleAdsServerStreamDecorator;
+use Google\Ads\GoogleAds\V14\Errors\GoogleAdsError;
+use Google\Ads\GoogleAds\V14\Services\ApplyRecommendationOperation;
+use Google\Ads\GoogleAds\V14\Services\ApplyRecommendationResult;
+use Google\Ads\GoogleAds\V14\Services\GoogleAdsRow;
+use Google\Ads\GoogleAds\V14\Services\SearchGoogleAdsStreamRequest;
 use Google\ApiCore\ApiException;
 
 /**
@@ -73,6 +74,12 @@ class DetectAndApplyRecommendations
         // OAuth2 credentials above.
         $googleAdsClient = (new GoogleAdsClientBuilder())->fromFile()
             ->withOAuth2Credential($oAuth2Credential)
+            // We set this value to true to show how to use GAPIC v2 source code. You can remove the
+            // below line if you wish to use the old-style source code. Note that in that case, you
+            // probably need to modify some parts of the code below to make it work.
+            // For more information, see
+            // https://developers.devsite.corp.google.com/google-ads/api/docs/client-libs/php/gapic.
+            ->usingGapicV2Source(true)
             ->build();
 
         try {
@@ -126,7 +133,9 @@ class DetectAndApplyRecommendations
         for ($i = 0; $i < self::NUMBER_OF_RUNS; $i++) {
             // Issues a search stream request.
             /* @var GoogleAdsServerStreamDecorator $stream */
-            $stream = $googleAdsServiceClient->searchStream($customerId, $query);
+            $stream = $googleAdsServiceClient->searchStream(
+                SearchGoogleAdsStreamRequest::build($customerId, $query)
+            );
 
             // Creates apply operations for all the recommendations found.
             $applyRecommendationOperations = [];

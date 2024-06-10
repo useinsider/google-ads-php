@@ -25,40 +25,40 @@ use Google\Ads\GoogleAds\Examples\Utils\ArgumentNames;
 use Google\Ads\GoogleAds\Examples\Utils\ArgumentParser;
 use Google\Ads\GoogleAds\Examples\Utils\Helper;
 use Google\Ads\GoogleAds\Lib\OAuth2TokenBuilder;
-use Google\Ads\GoogleAds\Lib\V12\GoogleAdsClient;
-use Google\Ads\GoogleAds\Lib\V12\GoogleAdsClientBuilder;
-use Google\Ads\GoogleAds\Lib\V12\GoogleAdsException;
-use Google\Ads\GoogleAds\Util\V12\GoogleAdsFailures;
-use Google\Ads\GoogleAds\Util\V12\ResourceNames;
-use Google\Ads\GoogleAds\V12\Common\ExpandedTextAdInfo;
-use Google\Ads\GoogleAds\V12\Common\KeywordInfo;
-use Google\Ads\GoogleAds\V12\Common\ManualCpc;
-use Google\Ads\GoogleAds\V12\Enums\AdGroupAdStatusEnum\AdGroupAdStatus;
-use Google\Ads\GoogleAds\V12\Enums\AdGroupCriterionStatusEnum\AdGroupCriterionStatus;
-use Google\Ads\GoogleAds\V12\Enums\AdGroupTypeEnum\AdGroupType;
-use Google\Ads\GoogleAds\V12\Enums\AdvertisingChannelTypeEnum\AdvertisingChannelType;
-use Google\Ads\GoogleAds\V12\Enums\BudgetDeliveryMethodEnum\BudgetDeliveryMethod;
-use Google\Ads\GoogleAds\V12\Enums\CampaignStatusEnum\CampaignStatus;
-use Google\Ads\GoogleAds\V12\Enums\KeywordMatchTypeEnum\KeywordMatchType;
-use Google\Ads\GoogleAds\V12\Errors\GoogleAdsError;
-use Google\Ads\GoogleAds\V12\Resources\Ad;
-use Google\Ads\GoogleAds\V12\Resources\AdGroup;
-use Google\Ads\GoogleAds\V12\Resources\AdGroupAd;
-use Google\Ads\GoogleAds\V12\Resources\AdGroupCriterion;
-use Google\Ads\GoogleAds\V12\Resources\BatchJob;
-use Google\Ads\GoogleAds\V12\Resources\Campaign;
-use Google\Ads\GoogleAds\V12\Resources\CampaignBudget;
-use Google\Ads\GoogleAds\V12\Resources\CampaignCriterion;
-use Google\Ads\GoogleAds\V12\Services\AdGroupAdOperation;
-use Google\Ads\GoogleAds\V12\Services\AdGroupCriterionOperation;
-use Google\Ads\GoogleAds\V12\Services\AdGroupOperation;
-use Google\Ads\GoogleAds\V12\Services\BatchJobOperation;
-use Google\Ads\GoogleAds\V12\Services\BatchJobResult;
-use Google\Ads\GoogleAds\V12\Services\BatchJobServiceClient;
-use Google\Ads\GoogleAds\V12\Services\CampaignBudgetOperation;
-use Google\Ads\GoogleAds\V12\Services\CampaignCriterionOperation;
-use Google\Ads\GoogleAds\V12\Services\CampaignOperation;
-use Google\Ads\GoogleAds\V12\Services\MutateOperation;
+use Google\Ads\GoogleAds\Lib\V14\GoogleAdsClient;
+use Google\Ads\GoogleAds\Lib\V14\GoogleAdsClientBuilder;
+use Google\Ads\GoogleAds\Lib\V14\GoogleAdsException;
+use Google\Ads\GoogleAds\Util\V14\GoogleAdsFailures;
+use Google\Ads\GoogleAds\Util\V14\ResourceNames;
+use Google\Ads\GoogleAds\V14\Common\ExpandedTextAdInfo;
+use Google\Ads\GoogleAds\V14\Common\KeywordInfo;
+use Google\Ads\GoogleAds\V14\Common\ManualCpc;
+use Google\Ads\GoogleAds\V14\Enums\AdGroupAdStatusEnum\AdGroupAdStatus;
+use Google\Ads\GoogleAds\V14\Enums\AdGroupCriterionStatusEnum\AdGroupCriterionStatus;
+use Google\Ads\GoogleAds\V14\Enums\AdGroupTypeEnum\AdGroupType;
+use Google\Ads\GoogleAds\V14\Enums\AdvertisingChannelTypeEnum\AdvertisingChannelType;
+use Google\Ads\GoogleAds\V14\Enums\BudgetDeliveryMethodEnum\BudgetDeliveryMethod;
+use Google\Ads\GoogleAds\V14\Enums\CampaignStatusEnum\CampaignStatus;
+use Google\Ads\GoogleAds\V14\Enums\KeywordMatchTypeEnum\KeywordMatchType;
+use Google\Ads\GoogleAds\V14\Errors\GoogleAdsError;
+use Google\Ads\GoogleAds\V14\Resources\Ad;
+use Google\Ads\GoogleAds\V14\Resources\AdGroup;
+use Google\Ads\GoogleAds\V14\Resources\AdGroupAd;
+use Google\Ads\GoogleAds\V14\Resources\AdGroupCriterion;
+use Google\Ads\GoogleAds\V14\Resources\BatchJob;
+use Google\Ads\GoogleAds\V14\Resources\Campaign;
+use Google\Ads\GoogleAds\V14\Resources\CampaignBudget;
+use Google\Ads\GoogleAds\V14\Resources\CampaignCriterion;
+use Google\Ads\GoogleAds\V14\Services\AdGroupAdOperation;
+use Google\Ads\GoogleAds\V14\Services\AdGroupCriterionOperation;
+use Google\Ads\GoogleAds\V14\Services\AdGroupOperation;
+use Google\Ads\GoogleAds\V14\Services\BatchJobOperation;
+use Google\Ads\GoogleAds\V14\Services\BatchJobResult;
+use Google\Ads\GoogleAds\V14\Services\BatchJobServiceClient;
+use Google\Ads\GoogleAds\V14\Services\CampaignBudgetOperation;
+use Google\Ads\GoogleAds\V14\Services\CampaignCriterionOperation;
+use Google\Ads\GoogleAds\V14\Services\CampaignOperation;
+use Google\Ads\GoogleAds\V14\Services\MutateOperation;
 use Google\ApiCore\ApiException;
 use Google\ApiCore\OperationResponse;
 
@@ -97,6 +97,12 @@ class AddCompleteCampaignsUsingBatchJob
         $googleAdsClient = (new GoogleAdsClientBuilder())
             ->fromFile()
             ->withOAuth2Credential($oAuth2Credential)
+            // We set this value to true to show how to use GAPIC v2 source code. You can remove the
+            // below line if you wish to use the old-style source code. Note that in that case, you
+            // probably need to modify some parts of the code below to make it work.
+            // For more information, see
+            // https://developers.devsite.corp.google.com/google-ads/api/docs/client-libs/php/gapic.
+            ->usingGapicV2Source(true)
             ->build();
 
         try {

@@ -25,22 +25,24 @@ use Google\Ads\GoogleAds\Examples\Utils\ArgumentNames;
 use Google\Ads\GoogleAds\Examples\Utils\ArgumentParser;
 use Google\Ads\GoogleAds\Examples\Utils\Helper;
 use Google\Ads\GoogleAds\Lib\OAuth2TokenBuilder;
-use Google\Ads\GoogleAds\Lib\V12\GoogleAdsClient;
-use Google\Ads\GoogleAds\Lib\V12\GoogleAdsClientBuilder;
-use Google\Ads\GoogleAds\Lib\V12\GoogleAdsException;
-use Google\Ads\GoogleAds\V12\Common\MatchingFunction;
-use Google\Ads\GoogleAds\V12\Common\Operand;
-use Google\Ads\GoogleAds\V12\Common\Operand\ConstantOperand;
-use Google\Ads\GoogleAds\V12\Enums\FeedOriginEnum\FeedOrigin;
-use Google\Ads\GoogleAds\V12\Enums\MatchingFunctionOperatorEnum\MatchingFunctionOperator;
-use Google\Ads\GoogleAds\V12\Enums\PlaceholderTypeEnum\PlaceholderType;
-use Google\Ads\GoogleAds\V12\Errors\GoogleAdsError;
-use Google\Ads\GoogleAds\V12\Resources\CustomerFeed;
-use Google\Ads\GoogleAds\V12\Resources\Feed;
-use Google\Ads\GoogleAds\V12\Resources\Feed\PlacesLocationFeedData;
-use Google\Ads\GoogleAds\V12\Resources\Feed\PlacesLocationFeedData\OAuthInfo;
-use Google\Ads\GoogleAds\V12\Services\CustomerFeedOperation;
-use Google\Ads\GoogleAds\V12\Services\FeedOperation;
+use Google\Ads\GoogleAds\Lib\V14\GoogleAdsClient;
+use Google\Ads\GoogleAds\Lib\V14\GoogleAdsClientBuilder;
+use Google\Ads\GoogleAds\Lib\V14\GoogleAdsException;
+use Google\Ads\GoogleAds\V14\Common\MatchingFunction;
+use Google\Ads\GoogleAds\V14\Common\Operand;
+use Google\Ads\GoogleAds\V14\Common\Operand\ConstantOperand;
+use Google\Ads\GoogleAds\V14\Enums\FeedOriginEnum\FeedOrigin;
+use Google\Ads\GoogleAds\V14\Enums\MatchingFunctionOperatorEnum\MatchingFunctionOperator;
+use Google\Ads\GoogleAds\V14\Enums\PlaceholderTypeEnum\PlaceholderType;
+use Google\Ads\GoogleAds\V14\Errors\GoogleAdsError;
+use Google\Ads\GoogleAds\V14\Resources\CustomerFeed;
+use Google\Ads\GoogleAds\V14\Resources\Feed;
+use Google\Ads\GoogleAds\V14\Resources\Feed\PlacesLocationFeedData;
+use Google\Ads\GoogleAds\V14\Resources\Feed\PlacesLocationFeedData\OAuthInfo;
+use Google\Ads\GoogleAds\V14\Services\CustomerFeedOperation;
+use Google\Ads\GoogleAds\V14\Services\FeedOperation;
+use Google\Ads\GoogleAds\V14\Services\MutateCustomerFeedsRequest;
+use Google\Ads\GoogleAds\V14\Services\MutateFeedsRequest;
 use Google\ApiCore\ApiException;
 
 /**
@@ -79,6 +81,12 @@ class AddBusinessProfileLocationExtensions
         // OAuth2 credentials above.
         $googleAdsClient = (new GoogleAdsClientBuilder())->fromFile()
             ->withOAuth2Credential($oAuth2Credential)
+            // We set this value to true to show how to use GAPIC v2 source code. You can remove the
+            // below line if you wish to use the old-style source code. Note that in that case, you
+            // probably need to modify some parts of the code below to make it work.
+            // For more information, see
+            // https://developers.devsite.corp.google.com/google-ads/api/docs/client-libs/php/gapic.
+            ->usingGapicV2Source(true)
             ->build();
 
         try {
@@ -211,8 +219,7 @@ class AddBusinessProfileLocationExtensions
         //    placeholder fields of the LOCATION placeholder type.
         $feedServiceClient = $googleAdsClient->getFeedServiceClient();
         $response = $feedServiceClient->mutateFeeds(
-            $customerId,
-            [$feedOperation]
+            MutateFeedsRequest::build($customerId, [$feedOperation])
         );
         $businessProfileFeedResourceName = $response->getResults()[0]->getResourceName();
         printf(
@@ -273,15 +280,14 @@ class AddBusinessProfileLocationExtensions
                 // Issues a mutate request to add a customer feed and print its information if the
                 // request succeeded.
                 $addedCustomerFeed = $customerFeedServiceClient->mutateCustomerFeeds(
-                    $customerId,
-                    [$customerFeedOperation]
+                    MutateCustomerFeedsRequest::build($customerId, [$customerFeedOperation])
                 );
                 printf(
                     "Customer feed created with resource name: '%s'.%s",
                     $addedCustomerFeed->getResults()[0]->getResourceName(),
                     PHP_EOL
                 );
-            } catch (GoogleAdsException $googleAdsException) {
+            } catch (GoogleAdsException) {
                 // Waits using exponential backoff policy.
                 $sleepSeconds = self::POLL_FREQUENCY_SECONDS * pow(2, $numberOfAttempts);
                 // Exits the loop early if $sleepSeconds grows too large in the event that

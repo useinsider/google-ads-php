@@ -24,18 +24,19 @@ use GetOpt\GetOpt;
 use Google\Ads\GoogleAds\Examples\Utils\ArgumentNames;
 use Google\Ads\GoogleAds\Examples\Utils\ArgumentParser;
 use Google\Ads\GoogleAds\Lib\OAuth2TokenBuilder;
-use Google\Ads\GoogleAds\Lib\V12\GoogleAdsClient;
-use Google\Ads\GoogleAds\Lib\V12\GoogleAdsClientBuilder;
-use Google\Ads\GoogleAds\Lib\V12\GoogleAdsException;
-use Google\Ads\GoogleAds\Util\V12\ResourceNames;
-use Google\Ads\GoogleAds\V12\Common\KeywordInfo;
-use Google\Ads\GoogleAds\V12\Common\PolicyViolationKey;
-use Google\Ads\GoogleAds\V12\Enums\AdGroupCriterionStatusEnum\AdGroupCriterionStatus;
-use Google\Ads\GoogleAds\V12\Enums\KeywordMatchTypeEnum\KeywordMatchType;
-use Google\Ads\GoogleAds\V12\Errors\GoogleAdsError;
-use Google\Ads\GoogleAds\V12\Resources\AdGroupCriterion;
-use Google\Ads\GoogleAds\V12\Services\AdGroupCriterionOperation;
-use Google\Ads\GoogleAds\V12\Services\AdGroupCriterionServiceClient;
+use Google\Ads\GoogleAds\Lib\V14\GoogleAdsClient;
+use Google\Ads\GoogleAds\Lib\V14\GoogleAdsClientBuilder;
+use Google\Ads\GoogleAds\Lib\V14\GoogleAdsException;
+use Google\Ads\GoogleAds\Util\V14\ResourceNames;
+use Google\Ads\GoogleAds\V14\Common\KeywordInfo;
+use Google\Ads\GoogleAds\V14\Common\PolicyViolationKey;
+use Google\Ads\GoogleAds\V14\Enums\AdGroupCriterionStatusEnum\AdGroupCriterionStatus;
+use Google\Ads\GoogleAds\V14\Enums\KeywordMatchTypeEnum\KeywordMatchType;
+use Google\Ads\GoogleAds\V14\Errors\GoogleAdsError;
+use Google\Ads\GoogleAds\V14\Resources\AdGroupCriterion;
+use Google\Ads\GoogleAds\V14\Services\AdGroupCriterionOperation;
+use Google\Ads\GoogleAds\V14\Services\Client\AdGroupCriterionServiceClient;
+use Google\Ads\GoogleAds\V14\Services\MutateAdGroupCriteriaRequest;
 use Google\ApiCore\ApiException;
 
 /**
@@ -73,6 +74,12 @@ class HandleKeywordPolicyViolations
         // OAuth2 credentials above.
         $googleAdsClient = (new GoogleAdsClientBuilder())->fromFile()
             ->withOAuth2Credential($oAuth2Credential)
+            // We set this value to true to show how to use GAPIC v2 source code. You can remove the
+            // below line if you wish to use the old-style source code. Note that in that case, you
+            // probably need to modify some parts of the code below to make it work.
+            // For more information, see
+            // https://developers.devsite.corp.google.com/google-ads/api/docs/client-libs/php/gapic.
+            ->usingGapicV2Source(true)
             ->build();
 
         try {
@@ -143,8 +150,7 @@ class HandleKeywordPolicyViolations
         try {
             // Try sending a mutate request to add the keyword.
             $response = $adGroupCriterionServiceClient->mutateAdGroupCriteria(
-                $customerId,
-                [$adGroupCriterionOperation]
+                MutateAdGroupCriteriaRequest::build($customerId, [$adGroupCriterionOperation])
             );
             printf(
                 "Added a keyword with resource name '%s'.%s",
@@ -261,8 +267,7 @@ class HandleKeywordPolicyViolations
             . " violations." . PHP_EOL;
         $adGroupCriterionOperation->setExemptPolicyViolationKeys($exemptPolicyViolationKeys);
         $response = $adGroupCriterionServiceClient->mutateAdGroupCriteria(
-            $customerId,
-            [$adGroupCriterionOperation]
+            MutateAdGroupCriteriaRequest::build($customerId, [$adGroupCriterionOperation])
         );
         printf(
             "Successfully added a keyword with resource name '%s' by requesting for"

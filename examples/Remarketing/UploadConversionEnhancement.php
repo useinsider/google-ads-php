@@ -24,19 +24,19 @@ use GetOpt\GetOpt;
 use Google\Ads\GoogleAds\Examples\Utils\ArgumentNames;
 use Google\Ads\GoogleAds\Examples\Utils\ArgumentParser;
 use Google\Ads\GoogleAds\Lib\OAuth2TokenBuilder;
-use Google\Ads\GoogleAds\Lib\V12\GoogleAdsClient;
-use Google\Ads\GoogleAds\Lib\V12\GoogleAdsClientBuilder;
-use Google\Ads\GoogleAds\Lib\V12\GoogleAdsException;
-use Google\Ads\GoogleAds\Util\V12\ResourceNames;
-use Google\Ads\GoogleAds\V12\Common\OfflineUserAddressInfo;
-use Google\Ads\GoogleAds\V12\Common\UserIdentifier;
-use Google\Ads\GoogleAds\V12\Enums\ConversionAdjustmentTypeEnum\ConversionAdjustmentType;
-use Google\Ads\GoogleAds\V12\Enums\UserIdentifierSourceEnum\UserIdentifierSource;
-use Google\Ads\GoogleAds\V12\Errors\GoogleAdsError;
-use Google\Ads\GoogleAds\V12\Services\ConversionAdjustment;
-use Google\Ads\GoogleAds\V12\Services\ConversionAdjustmentResult;
-use Google\Ads\GoogleAds\V12\Services\GclidDateTimePair;
-use Google\Ads\GoogleAds\V12\Services\RestatementValue;
+use Google\Ads\GoogleAds\Lib\V14\GoogleAdsClient;
+use Google\Ads\GoogleAds\Lib\V14\GoogleAdsClientBuilder;
+use Google\Ads\GoogleAds\Lib\V14\GoogleAdsException;
+use Google\Ads\GoogleAds\Util\V14\ResourceNames;
+use Google\Ads\GoogleAds\V14\Common\OfflineUserAddressInfo;
+use Google\Ads\GoogleAds\V14\Common\UserIdentifier;
+use Google\Ads\GoogleAds\V14\Enums\ConversionAdjustmentTypeEnum\ConversionAdjustmentType;
+use Google\Ads\GoogleAds\V14\Enums\UserIdentifierSourceEnum\UserIdentifierSource;
+use Google\Ads\GoogleAds\V14\Errors\GoogleAdsError;
+use Google\Ads\GoogleAds\V14\Services\ConversionAdjustment;
+use Google\Ads\GoogleAds\V14\Services\ConversionAdjustmentResult;
+use Google\Ads\GoogleAds\V14\Services\GclidDateTimePair;
+use Google\Ads\GoogleAds\V14\Services\UploadConversionAdjustmentsRequest;
 use Google\ApiCore\ApiException;
 
 /**
@@ -57,9 +57,6 @@ class UploadConversionEnhancement
     // Setting this field is optional, but recommended.
     private const CONVERSION_DATE_TIME = null;
     private const USER_AGENT = null;
-    private const RESTATEMENT_VALUE = null;
-    // The currency of the restatement value.
-    private const CURRENCY_CODE = null;
 
     public static function main()
     {
@@ -70,9 +67,7 @@ class UploadConversionEnhancement
             ArgumentNames::CONVERSION_ACTION_ID => GetOpt::REQUIRED_ARGUMENT,
             ArgumentNames::ORDER_ID => GetOpt::REQUIRED_ARGUMENT,
             ArgumentNames::CONVERSION_DATE_TIME => GetOpt::OPTIONAL_ARGUMENT,
-            ArgumentNames::USER_AGENT => GetOpt::OPTIONAL_ARGUMENT,
-            ArgumentNames::RESTATEMENT_VALUE => GetOpt::OPTIONAL_ARGUMENT,
-            ArgumentNames::CURRENCY_CODE => GetOpt::OPTIONAL_ARGUMENT
+            ArgumentNames::USER_AGENT => GetOpt::OPTIONAL_ARGUMENT
         ]);
 
         // Generate a refreshable OAuth2 credential for authentication.
@@ -83,6 +78,12 @@ class UploadConversionEnhancement
         $googleAdsClient = (new GoogleAdsClientBuilder())
             ->fromFile()
             ->withOAuth2Credential($oAuth2Credential)
+            // We set this value to true to show how to use GAPIC v2 source code. You can remove the
+            // below line if you wish to use the old-style source code. Note that in that case, you
+            // probably need to modify some parts of the code below to make it work.
+            // For more information, see
+            // https://developers.devsite.corp.google.com/google-ads/api/docs/client-libs/php/gapic.
+            ->usingGapicV2Source(true)
             ->build();
 
         try {
@@ -92,9 +93,7 @@ class UploadConversionEnhancement
                 $options[ArgumentNames::CONVERSION_ACTION_ID] ?: self::CONVERSION_ACTION_ID,
                 $options[ArgumentNames::ORDER_ID] ?: self::ORDER_ID,
                 $options[ArgumentNames::CONVERSION_DATE_TIME] ?: self::CONVERSION_DATE_TIME,
-                $options[ArgumentNames::USER_AGENT] ?: self::USER_AGENT,
-                $options[ArgumentNames::RESTATEMENT_VALUE] ?: self::RESTATEMENT_VALUE,
-                $options[ArgumentNames::CURRENCY_CODE] ?: self::CURRENCY_CODE
+                $options[ArgumentNames::USER_AGENT] ?: self::USER_AGENT
             );
         } catch (GoogleAdsException $googleAdsException) {
             printf(
@@ -134,8 +133,6 @@ class UploadConversionEnhancement
      * @param string|null $conversionDateTime the date and time of the conversion.
      *      The format is "yyyy-mm-dd hh:mm:ss+|-hh:mm", e.g. “2019-01-01 12:32:45-08:00”
      * @param string|null $userAgent the HTTP user agent of the conversion
-     * @param float|null $restatementValue the enhancement value
-     * @param string|null $restatementCurrencyCode the currency of the enhancement value
      */
     // [START upload_conversion_enhancement]
     public static function runExample(
@@ -144,9 +141,7 @@ class UploadConversionEnhancement
         int $conversionActionId,
         string $orderId,
         ?string $conversionDateTime,
-        ?string $userAgent,
-        ?float $restatementValue,
-        ?string $restatementCurrencyCode
+        ?string $userAgent
     ) {
         // [START create_adjustment]
         // Creates the conversion enhancement.
@@ -167,8 +162,8 @@ class UploadConversionEnhancement
         // Creates a user identifier using sample values for the user address.
         $addressIdentifier = new UserIdentifier([
             'address_info' => new OfflineUserAddressInfo([
-                'hashed_first_name' => self::normalizeAndHash($hashAlgorithm, 'Joanna'),
-                'hashed_last_name' => self::normalizeAndHash($hashAlgorithm, 'Smith'),
+                'hashed_first_name' => self::normalizeAndHash($hashAlgorithm, 'Dana'),
+                'hashed_last_name' => self::normalizeAndHash($hashAlgorithm, 'Quinn'),
                 'hashed_street_address' => self::normalizeAndHash(
                     $hashAlgorithm,
                     '1600 Amphitheatre Pkwy'
@@ -187,7 +182,7 @@ class UploadConversionEnhancement
             // Uses the normalize and hash method specifically for email addresses.
             'hashed_email' => self::normalizeAndHashEmailAddress(
                 $hashAlgorithm,
-                'joannasmith@example.com'
+                'dana@example.com'
             ),
             // Optional: Specifies the user identifier source.
             'user_identifier_source' => UserIdentifierSource::FIRST_PARTY
@@ -212,30 +207,14 @@ class UploadConversionEnhancement
             // as same-device or both attributed as cross-device.
             $conversionAdjustment->setUserAgent($userAgent);
         }
-
-        if ($restatementValue !== null) {
-            // Sets the new value of the conversion.
-            $restatementValue = new RestatementValue([
-                'adjusted_value' => $restatementValue
-            ]);
-            // Sets the currency of the new value, if provided. Otherwise, the default currency
-            // from the conversion action is used, and if that is not set then the account currency
-            // is used.
-            if ($restatementCurrencyCode !== null) {
-                $restatementValue->setCurrencyCode($restatementCurrencyCode);
-            }
-            $conversionAdjustment->setRestatementValue($restatementValue);
-        }
         // [END create_adjustment]
 
         // Issues a request to upload the conversion enhancement.
         $conversionAdjustmentUploadServiceClient =
             $googleAdsClient->getConversionAdjustmentUploadServiceClient();
         $response = $conversionAdjustmentUploadServiceClient->uploadConversionAdjustments(
-            $customerId,
-            [$conversionAdjustment],
             // Enables partial failure (must be true).
-            true
+            UploadConversionAdjustmentsRequest::build($customerId, [$conversionAdjustment], true)
         );
 
         // Prints the status message if any partial failure error is returned.
