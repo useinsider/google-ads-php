@@ -25,49 +25,49 @@ use Google\Ads\GoogleAds\Examples\Utils\ArgumentNames;
 use Google\Ads\GoogleAds\Examples\Utils\ArgumentParser;
 use Google\Ads\GoogleAds\Examples\Utils\Helper;
 use Google\Ads\GoogleAds\Lib\OAuth2TokenBuilder;
-use Google\Ads\GoogleAds\Lib\V14\GoogleAdsClient;
-use Google\Ads\GoogleAds\Lib\V14\GoogleAdsClientBuilder;
-use Google\Ads\GoogleAds\Lib\V14\GoogleAdsException;
+use Google\Ads\GoogleAds\Lib\V17\GoogleAdsClient;
+use Google\Ads\GoogleAds\Lib\V17\GoogleAdsClientBuilder;
+use Google\Ads\GoogleAds\Lib\V17\GoogleAdsException;
 use Google\Ads\GoogleAds\Util\FieldMasks;
-use Google\Ads\GoogleAds\Util\V14\ResourceNames;
-use Google\Ads\GoogleAds\V14\Common\ImageAsset;
-use Google\Ads\GoogleAds\V14\Common\LanguageInfo;
-use Google\Ads\GoogleAds\V14\Common\LocationInfo;
-use Google\Ads\GoogleAds\V14\Common\MaximizeConversionValue;
-use Google\Ads\GoogleAds\V14\Common\TextAsset;
-use Google\Ads\GoogleAds\V14\Enums\AdvertisingChannelTypeEnum\AdvertisingChannelType;
-use Google\Ads\GoogleAds\V14\Enums\AssetFieldTypeEnum\AssetFieldType;
-use Google\Ads\GoogleAds\V14\Enums\AssetGroupStatusEnum\AssetGroupStatus;
-use Google\Ads\GoogleAds\V14\Enums\BudgetDeliveryMethodEnum\BudgetDeliveryMethod;
-use Google\Ads\GoogleAds\V14\Enums\CampaignStatusEnum\CampaignStatus;
-use Google\Ads\GoogleAds\V14\Enums\ConversionActionCategoryEnum\ConversionActionCategory;
-use Google\Ads\GoogleAds\V14\Enums\ConversionOriginEnum\ConversionOrigin;
-use Google\Ads\GoogleAds\V14\Enums\ListingGroupFilterTypeEnum\ListingGroupFilterType;
-use Google\Ads\GoogleAds\V14\Enums\ListingGroupFilterVerticalEnum\ListingGroupFilterVertical;
-use Google\Ads\GoogleAds\V14\Errors\GoogleAdsError;
-use Google\Ads\GoogleAds\V14\Resources\Asset;
-use Google\Ads\GoogleAds\V14\Resources\AssetGroup;
-use Google\Ads\GoogleAds\V14\Resources\AssetGroupAsset;
-use Google\Ads\GoogleAds\V14\Resources\AssetGroupListingGroupFilter;
-use Google\Ads\GoogleAds\V14\Resources\Campaign;
-use Google\Ads\GoogleAds\V14\Resources\Campaign\ShoppingSetting;
-use Google\Ads\GoogleAds\V14\Resources\CampaignBudget;
-use Google\Ads\GoogleAds\V14\Resources\CampaignConversionGoal;
-use Google\Ads\GoogleAds\V14\Resources\CampaignCriterion;
-use Google\Ads\GoogleAds\V14\Services\AssetGroupAssetOperation;
-use Google\Ads\GoogleAds\V14\Services\AssetGroupListingGroupFilterOperation;
-use Google\Ads\GoogleAds\V14\Services\AssetGroupOperation;
-use Google\Ads\GoogleAds\V14\Services\AssetOperation;
-use Google\Ads\GoogleAds\V14\Services\CampaignBudgetOperation;
-use Google\Ads\GoogleAds\V14\Services\CampaignConversionGoalOperation;
-use Google\Ads\GoogleAds\V14\Services\CampaignCriterionOperation;
-use Google\Ads\GoogleAds\V14\Services\CampaignOperation;
-use Google\Ads\GoogleAds\V14\Services\GoogleAdsRow;
-use Google\Ads\GoogleAds\V14\Services\MutateGoogleAdsRequest;
-use Google\Ads\GoogleAds\V14\Services\MutateGoogleAdsResponse;
-use Google\Ads\GoogleAds\V14\Services\MutateOperation;
-use Google\Ads\GoogleAds\V14\Services\MutateOperationResponse;
-use Google\Ads\GoogleAds\V14\Services\SearchGoogleAdsRequest;
+use Google\Ads\GoogleAds\Util\V17\ResourceNames;
+use Google\Ads\GoogleAds\V17\Common\ImageAsset;
+use Google\Ads\GoogleAds\V17\Common\LanguageInfo;
+use Google\Ads\GoogleAds\V17\Common\LocationInfo;
+use Google\Ads\GoogleAds\V17\Common\MaximizeConversionValue;
+use Google\Ads\GoogleAds\V17\Common\TextAsset;
+use Google\Ads\GoogleAds\V17\Enums\AdvertisingChannelTypeEnum\AdvertisingChannelType;
+use Google\Ads\GoogleAds\V17\Enums\AssetFieldTypeEnum\AssetFieldType;
+use Google\Ads\GoogleAds\V17\Enums\AssetGroupStatusEnum\AssetGroupStatus;
+use Google\Ads\GoogleAds\V17\Enums\BudgetDeliveryMethodEnum\BudgetDeliveryMethod;
+use Google\Ads\GoogleAds\V17\Enums\CampaignStatusEnum\CampaignStatus;
+use Google\Ads\GoogleAds\V17\Enums\ConversionActionCategoryEnum\ConversionActionCategory;
+use Google\Ads\GoogleAds\V17\Enums\ConversionOriginEnum\ConversionOrigin;
+use Google\Ads\GoogleAds\V17\Enums\ListingGroupFilterListingSourceEnum\ListingGroupFilterListingSource;
+use Google\Ads\GoogleAds\V17\Enums\ListingGroupFilterTypeEnum\ListingGroupFilterType;
+use Google\Ads\GoogleAds\V17\Errors\GoogleAdsError;
+use Google\Ads\GoogleAds\V17\Resources\Asset;
+use Google\Ads\GoogleAds\V17\Resources\AssetGroup;
+use Google\Ads\GoogleAds\V17\Resources\AssetGroupAsset;
+use Google\Ads\GoogleAds\V17\Resources\AssetGroupListingGroupFilter;
+use Google\Ads\GoogleAds\V17\Resources\Campaign;
+use Google\Ads\GoogleAds\V17\Resources\Campaign\ShoppingSetting;
+use Google\Ads\GoogleAds\V17\Resources\CampaignBudget;
+use Google\Ads\GoogleAds\V17\Resources\CampaignConversionGoal;
+use Google\Ads\GoogleAds\V17\Resources\CampaignCriterion;
+use Google\Ads\GoogleAds\V17\Services\AssetGroupAssetOperation;
+use Google\Ads\GoogleAds\V17\Services\AssetGroupListingGroupFilterOperation;
+use Google\Ads\GoogleAds\V17\Services\AssetGroupOperation;
+use Google\Ads\GoogleAds\V17\Services\AssetOperation;
+use Google\Ads\GoogleAds\V17\Services\CampaignBudgetOperation;
+use Google\Ads\GoogleAds\V17\Services\CampaignConversionGoalOperation;
+use Google\Ads\GoogleAds\V17\Services\CampaignCriterionOperation;
+use Google\Ads\GoogleAds\V17\Services\CampaignOperation;
+use Google\Ads\GoogleAds\V17\Services\GoogleAdsRow;
+use Google\Ads\GoogleAds\V17\Services\MutateGoogleAdsRequest;
+use Google\Ads\GoogleAds\V17\Services\MutateGoogleAdsResponse;
+use Google\Ads\GoogleAds\V17\Services\MutateOperation;
+use Google\Ads\GoogleAds\V17\Services\MutateOperationResponse;
+use Google\Ads\GoogleAds\V17\Services\SearchGoogleAdsRequest;
 use Google\ApiCore\ApiException;
 use Google\ApiCore\Serializer;
 
@@ -118,8 +118,6 @@ class AddPerformanceMaxRetailCampaign
     /** @var int the negative temporary ID used in bulk mutates. */
     private static $nextTempId = self::ASSET_GROUP_TEMPORARY_ID - 1;
 
-    private const PAGE_SIZE = 10000;
-
     public static function main()
     {
         // Either pass the required parameters for this example on the command line, or insert them
@@ -127,8 +125,7 @@ class AddPerformanceMaxRetailCampaign
         $options = (new ArgumentParser())->parseCommandArguments([
             ArgumentNames::CUSTOMER_ID => GetOpt::REQUIRED_ARGUMENT,
             ArgumentNames::MERCHANT_CENTER_ACCOUNT_ID => GetOpt::REQUIRED_ARGUMENT,
-            ArgumentNames::FINAL_URL => GetOpt::REQUIRED_ARGUMENT,
-            ArgumentNames::SALES_COUNTRY => GetOpt::OPTIONAL_ARGUMENT
+            ArgumentNames::FINAL_URL => GetOpt::REQUIRED_ARGUMENT
         ]);
 
         // Generate a refreshable OAuth2 credential for authentication.
@@ -189,7 +186,6 @@ class AddPerformanceMaxRetailCampaign
      * @param GoogleAdsClient $googleAdsClient the Google Ads API client
      * @param int $customerId the customer ID
      * @param int $merchantCenterAccountId the Merchant Center account ID
-     * @param string $salesCountry the sales country of products to include in the campaign
      * @param string $finalUrl the final URL for the asset group of the campaign
      */
     // [START add_performance_max_retail_campaign]
@@ -197,7 +193,6 @@ class AddPerformanceMaxRetailCampaign
         GoogleAdsClient $googleAdsClient,
         int $customerId,
         int $merchantCenterAccountId,
-        string $salesCountry,
         string $finalUrl
     ) {
         // [START add_performance_max_retail_campaign_1]
@@ -239,8 +234,7 @@ class AddPerformanceMaxRetailCampaign
         $operations[] = self::createCampaignBudgetOperation($customerId);
         $operations[] = self::createPerformanceMaxCampaignOperation(
             $customerId,
-            $merchantCenterAccountId,
-            $salesCountry
+            $merchantCenterAccountId
         );
         $operations =
             array_merge($operations, self::createCampaignCriterionOperations($customerId));
@@ -309,14 +303,12 @@ class AddPerformanceMaxRetailCampaign
      *
      * @param int $customerId the customer ID
      * @param int $merchantCenterAccountId the Merchant Center account ID
-     * @param string $salesCountry the sales country of products to include in the campaign
      * @return MutateOperation the mutate operation that creates the campaign
      */
     // [START add_performance_max_retail_campaign_3]
     private static function createPerformanceMaxCampaignOperation(
         int $customerId,
-        int $merchantCenterAccountId,
-        string $salesCountry
+        int $merchantCenterAccountId
     ): MutateOperation {
         // Creates a mutate operation that creates a campaign operation.
         return new MutateOperation([
@@ -377,7 +369,11 @@ class AddPerformanceMaxRetailCampaign
                     // Sets the shopping settings.
                     'shopping_setting' => new ShoppingSetting([
                         'merchant_id' => $merchantCenterAccountId,
-                        'sales_country' => $salesCountry
+                        // Optional: To use products only from a specific feed, set feed_label to
+                        // the feed label used in Merchant Center.
+                        // See: https://support.google.com/merchants/answer/12453549.
+                        // Removing the feed_label field will use products from all feeds.
+                        // 'feed_label' => 'INSERT_FEED_LABEL_HERE'
                     ]),
 
                     // Optional fields.
@@ -574,8 +570,8 @@ class AddPerformanceMaxRetailCampaign
                     // UNIT_INCLUDED means this node has no children.
                     'type' => ListingGroupFilterType::UNIT_INCLUDED,
                     // Because this is a Performance Max campaign for retail, we need to specify
-                    // that this is in the shopping vertical.
-                    'vertical' => ListingGroupFilterVertical::SHOPPING
+                    // that this is in the shopping listing source.
+                    'listing_source' => ListingGroupFilterListingSource::SHOPPING
                 ])
             ])
         ]);
@@ -830,9 +826,8 @@ class AddPerformanceMaxRetailCampaign
             'FROM customer_conversion_goal';
         // The number of conversion goals is typically less than 50 so we use a search request
         // instead of search stream.
-        $response = $googleAdsServiceClient->search(
-            SearchGoogleAdsRequest::build($customerId, $query)->setPageSize(self::PAGE_SIZE)
-        );
+        $response =
+            $googleAdsServiceClient->search(SearchGoogleAdsRequest::build($customerId, $query));
 
         // Iterates over all rows in all pages and builds the list of conversion goals.
         foreach ($response->iterateAllElements() as $googleAdsRow) {

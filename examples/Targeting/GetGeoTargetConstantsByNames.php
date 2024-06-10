@@ -23,15 +23,15 @@ require __DIR__ . '/../../vendor/autoload.php';
 use GetOpt\GetOpt;
 use Google\Ads\GoogleAds\Examples\Utils\ArgumentNames;
 use Google\Ads\GoogleAds\Examples\Utils\ArgumentParser;
-use Google\Ads\GoogleAds\Lib\V14\GoogleAdsClient;
-use Google\Ads\GoogleAds\Lib\V14\GoogleAdsClientBuilder;
-use Google\Ads\GoogleAds\Lib\V14\GoogleAdsException;
+use Google\Ads\GoogleAds\Lib\V17\GoogleAdsClient;
+use Google\Ads\GoogleAds\Lib\V17\GoogleAdsClientBuilder;
+use Google\Ads\GoogleAds\Lib\V17\GoogleAdsException;
 use Google\Ads\GoogleAds\Lib\OAuth2TokenBuilder;
-use Google\Ads\GoogleAds\V14\Enums\GeoTargetConstantStatusEnum\GeoTargetConstantStatus;
-use Google\Ads\GoogleAds\V14\Errors\GoogleAdsError;
-use Google\Ads\GoogleAds\V14\Services\GeoTargetConstantSuggestion;
-use Google\Ads\GoogleAds\V14\Services\SuggestGeoTargetConstantsRequest;
-use Google\Ads\GoogleAds\V14\Services\SuggestGeoTargetConstantsRequest\LocationNames;
+use Google\Ads\GoogleAds\V17\Enums\GeoTargetConstantStatusEnum\GeoTargetConstantStatus;
+use Google\Ads\GoogleAds\V17\Errors\GoogleAdsError;
+use Google\Ads\GoogleAds\V17\Services\GeoTargetConstantSuggestion;
+use Google\Ads\GoogleAds\V17\Services\SuggestGeoTargetConstantsRequest;
+use Google\Ads\GoogleAds\V17\Services\SuggestGeoTargetConstantsRequest\LocationNames;
 use Google\ApiCore\ApiException;
 
 /**
@@ -46,7 +46,7 @@ class GetGeoTargetConstantsByNames
     // https://developers.google.com/google-ads/api/reference/data/geotargets.
     private const COUNTRY_CODE = 'FR';
     // The location names to get suggested geo target constants.
-    private const LOCATION_NAMES = ['Paris', 'Quebec', 'Spain', 'Deutschland'];
+    private static $LOCATION_NAMES = ['Paris', 'Quebec', 'Spain', 'Deutschland'];
 
     public static function main()
     {
@@ -77,7 +77,7 @@ class GetGeoTargetConstantsByNames
         try {
             self::runExample(
                 $googleAdsClient,
-                $options[ArgumentNames::LOCATION_NAMES] ?: self::LOCATION_NAMES,
+                $options[ArgumentNames::LOCATION_NAMES] ?: self::$LOCATION_NAMES,
                 $options[ArgumentNames::LOCALE] ?: self::LOCALE,
                 $options[ArgumentNames::COUNTRY_CODE] ?: self::COUNTRY_CODE
             );

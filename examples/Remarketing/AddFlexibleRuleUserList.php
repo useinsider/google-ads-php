@@ -25,24 +25,24 @@ use Google\Ads\GoogleAds\Examples\Utils\ArgumentNames;
 use Google\Ads\GoogleAds\Examples\Utils\ArgumentParser;
 use Google\Ads\GoogleAds\Examples\Utils\Helper;
 use Google\Ads\GoogleAds\Lib\OAuth2TokenBuilder;
-use Google\Ads\GoogleAds\Lib\V14\GoogleAdsClient;
-use Google\Ads\GoogleAds\Lib\V14\GoogleAdsClientBuilder;
-use Google\Ads\GoogleAds\Lib\V14\GoogleAdsException;
-use Google\Ads\GoogleAds\V14\Common\FlexibleRuleOperandInfo;
-use Google\Ads\GoogleAds\V14\Common\FlexibleRuleUserListInfo;
-use Google\Ads\GoogleAds\V14\Common\RuleBasedUserListInfo;
-use Google\Ads\GoogleAds\V14\Common\UserListRuleInfo;
-use Google\Ads\GoogleAds\V14\Common\UserListRuleItemGroupInfo;
-use Google\Ads\GoogleAds\V14\Common\UserListRuleItemInfo;
-use Google\Ads\GoogleAds\V14\Common\UserListStringRuleItemInfo;
-use Google\Ads\GoogleAds\V14\Enums\UserListFlexibleRuleOperatorEnum\UserListFlexibleRuleOperator;
-use Google\Ads\GoogleAds\V14\Enums\UserListMembershipStatusEnum\UserListMembershipStatus;
-use Google\Ads\GoogleAds\V14\Enums\UserListPrepopulationStatusEnum\UserListPrepopulationStatus;
-use Google\Ads\GoogleAds\V14\Enums\UserListStringRuleItemOperatorEnum\UserListStringRuleItemOperator;
-use Google\Ads\GoogleAds\V14\Errors\GoogleAdsError;
-use Google\Ads\GoogleAds\V14\Resources\UserList;
-use Google\Ads\GoogleAds\V14\Services\MutateUserListsRequest;
-use Google\Ads\GoogleAds\V14\Services\UserListOperation;
+use Google\Ads\GoogleAds\Lib\V17\GoogleAdsClient;
+use Google\Ads\GoogleAds\Lib\V17\GoogleAdsClientBuilder;
+use Google\Ads\GoogleAds\Lib\V17\GoogleAdsException;
+use Google\Ads\GoogleAds\V17\Common\FlexibleRuleOperandInfo;
+use Google\Ads\GoogleAds\V17\Common\FlexibleRuleUserListInfo;
+use Google\Ads\GoogleAds\V17\Common\RuleBasedUserListInfo;
+use Google\Ads\GoogleAds\V17\Common\UserListRuleInfo;
+use Google\Ads\GoogleAds\V17\Common\UserListRuleItemGroupInfo;
+use Google\Ads\GoogleAds\V17\Common\UserListRuleItemInfo;
+use Google\Ads\GoogleAds\V17\Common\UserListStringRuleItemInfo;
+use Google\Ads\GoogleAds\V17\Enums\UserListFlexibleRuleOperatorEnum\UserListFlexibleRuleOperator;
+use Google\Ads\GoogleAds\V17\Enums\UserListMembershipStatusEnum\UserListMembershipStatus;
+use Google\Ads\GoogleAds\V17\Enums\UserListPrepopulationStatusEnum\UserListPrepopulationStatus;
+use Google\Ads\GoogleAds\V17\Enums\UserListStringRuleItemOperatorEnum\UserListStringRuleItemOperator;
+use Google\Ads\GoogleAds\V17\Errors\GoogleAdsError;
+use Google\Ads\GoogleAds\V17\Resources\UserList;
+use Google\Ads\GoogleAds\V17\Services\MutateUserListsRequest;
+use Google\Ads\GoogleAds\V17\Services\UserListOperation;
 use Google\ApiCore\ApiException;
 
 /**
@@ -171,7 +171,6 @@ class AddFlexibleRuleUserList
             'description' => 'Visitors of both http://example.com/example1 AND ' .
                 'http://example.com/example2 but NOT http://example.com/example3',
             'membership_status' => UserListMembershipStatus::OPEN,
-            'membership_life_span' => 365,
             'rule_based_user_list' => $ruleBasedUserListInfo
         ]);
 

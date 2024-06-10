@@ -1,3 +1,114 @@
+## 23.1.0
+*   Added support for v17 of Google Ads API.
+*   Updated code examples for removing the usage of `pageSize`:
+    * GetAccountHierarchy
+    * GetChangeDetails
+    * GetChangeSummary
+    * LinkManagerToClient
+    * FindAndRemoveCriteriaFromSharedSet
+    * GetAdGroupBidModifiers
+    * GetResponsiveSearchAds
+    * GetAllDisapprovedAds
+    * CampaignReportToCsv
+    * SetUpRemarketing
+    * UpdateAudienceTargetRestriction
+    * AddPerformanceMaxProductListingGroupTree
+    * AddPerformanceMaxRetailCampaign
+    * AddShoppingProductListingGroupTree
+    * GetProductCategoryConstants
+    * Utils\Feeds
+*   Removed code examples:
+    * NavigateSearchResultPagesCachingTokens
+
+## 23.0.1
+*   Re-generated the source code for v16_1 of Google Ads API to add some missing
+    classes and enum values.
+
+## 23.0.0
+*   Added support for v16_1 of Google Ads API.
+*   Removed support for v14 of Google Ads API.
+*   Added support for `google/protobuf` v4.26.
+*   Updated `composer.json` to require the minimum PHP version of 8.1.
+*   Rolled back changes to the code base that requires PHP 8.0 or above, so PHP
+    7 users can still easily clone this library to work with the legacy code.
+*   Updated `package.json` of LaravelSampleApp.
+*   Added VerifyAdvertiserIdentity example.
+*   Updated code examples:
+    * AddCompleteCampaignsUsingBatchJob
+    * DetectAndApplyRecommendations
+    * DismissRecommendation
+    * UploadConversionAdjustment
+*   Removed code examples:
+    * AddFlightsFeed
+    * AddRealEstateFeed
+    * ApplyRecommendation
+    * ApproveMerchantCenterLink
+    * DismissRecommendation
+    * RejectMerchantCenterLink
+
+## 22.1.0
+*   Added support for v16 of Google Ads API.
+*   Fixed dependabot alert in `examples/LaravelSampleApp/composer.lock`.
+*   Renamed `examples/Extensions` to `examples/Assets`. Removed some logic
+    related to the extensions.
+*   Renamed code examples:
+    * from AddLeadFormExtension to AddLeadFormAsset
+    * from AddSitelinksUsingAssets to AddSitelinks
+*   Updated code examples:
+    * AddConversionAction
+    * AddFlexibleRuleUserList
+    * GetAdGroupBidModifiers
+*   Removed code examples:
+    * AddAffiliateLocationExtensions
+    * AddBusinessProfileLocationExtensions
+    * AddGeoTarget
+    * AddImageExtension
+    * AddSitelinks (the old one that uses extensions)
+    * MigratePromotionFeedToAsset
+    * RemoveEntireSitelinkCampaignExtensionSetting
+    * UpdateSitelink
+    * UpdateSitelinkCampaignExtensionSetting
+
+## 22.0.0
+*   Removed support for v13 of Google Ads API.
+*   Added more methods to `ResourceNames` of v14 and v15.
+*   Updated `GoogleAdsFailuresInterceptorTest.php` and `GoogleAdsLoggingInterceptorTest` to make them work with the latest version of `google/gax`.
+*   Updated code examples:
+    * AddFlexibleRuleUserList
+    * AddShoppingProductAd
+    * UploadOfflineConversion
+
+## 21.1.0
+*   Added support for v15 of Google Ads API. The following code examples still use v14 because the services in the examples were removed in v15:
+    * ApproveMerchantCenterLink
+    * RejectMerchantCenterLink
+    * UploadImage
+    * UploadMediaBundle
+*   The GAPIC v2 service clients (`src/Google/Ads/GoogleAds/v15/Services/Client/<SERVICE_NAME>Client.php`) no longer rely on base classes (`src/Google/Ads/GoogleAds/v15/Services/Client/BaseClient/<SERVICE_NAME>BaseClient.php`). All functions and variables are now directly included in the service classes.
+*   Added support for `useCloudOrgForApiAccess` config. This is in preparation for the pilot that uses Google Cloud orgs for API Access levels.
+*   Updated
+    [`InfoRedactor`](https://github.com/googleads/google-ads-php/blob/main/src/Google/Ads/GoogleAds/Lib/V15/InfoRedactor.php) to redact fields of Local Services lead and Local Services lead
+conversation.
+*   Updated code examples:
+    * AddBillingSetup
+    * AddPerformanceMaxProductListingGroupTree
+    * AddCustomerMatchUserList
+    * UploadCallConversion
+    * UploadOfflineConversion
+    * UploadStoreSalesTransactions
+*   Renamed and updated code examples:
+    * UploadConversionWithIdentifiers to UploadEnhancedConversionsForLeads
+    * UploadConversionEnhancement to UploadEnhancedConversionsForWeb
+*   Fixed the following Shopping examples after the `ShoppingSetting::sales_country` field is
+    removed:
+    * AddMerchantCenterDynamicRemarketingCampaign
+    * AddPerformanceMaxRetailCampaign
+    * AddShoppingProductAd
+
+## 21.0.1
+*   Fixed #946 by adding `forTopicConstant()` to
+    [ResourceNames](https://github.com/googleads/google-ads-php/blob/main/src/Google/Ads/GoogleAds/Util/V14/ResourceNames.php).
+
 ## 21.0.0
 *   Removed support for v12 of Google Ads API.
 *   Use [the GAPIC v2 source
