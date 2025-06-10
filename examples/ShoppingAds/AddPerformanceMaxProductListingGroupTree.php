@@ -24,25 +24,25 @@ use GetOpt\GetOpt;
 use Google\Ads\GoogleAds\Examples\Utils\ArgumentNames;
 use Google\Ads\GoogleAds\Examples\Utils\ArgumentParser;
 use Google\Ads\GoogleAds\Lib\OAuth2TokenBuilder;
-use Google\Ads\GoogleAds\Lib\V17\GoogleAdsClient;
-use Google\Ads\GoogleAds\Lib\V17\GoogleAdsClientBuilder;
-use Google\Ads\GoogleAds\Lib\V17\GoogleAdsException;
-use Google\Ads\GoogleAds\Util\V17\ResourceNames;
-use Google\Ads\GoogleAds\V17\Enums\ListingGroupFilterListingSourceEnum\ListingGroupFilterListingSource;
-use Google\Ads\GoogleAds\V17\Enums\ListingGroupFilterProductConditionEnum\ListingGroupFilterProductCondition;
-use Google\Ads\GoogleAds\V17\Enums\ListingGroupFilterTypeEnum\ListingGroupFilterType;
-use Google\Ads\GoogleAds\V17\Errors\GoogleAdsError;
-use Google\Ads\GoogleAds\V17\Resources\AssetGroupListingGroupFilter;
-use Google\Ads\GoogleAds\V17\Resources\ListingGroupFilterDimension;
-use Google\Ads\GoogleAds\V17\Resources\ListingGroupFilterDimension\ProductBrand;
-use Google\Ads\GoogleAds\V17\Resources\ListingGroupFilterDimension\ProductCondition;
-use Google\Ads\GoogleAds\V17\Services\AssetGroupListingGroupFilterOperation;
-use Google\Ads\GoogleAds\V17\Services\GoogleAdsRow;
-use Google\Ads\GoogleAds\V17\Services\MutateGoogleAdsRequest;
-use Google\Ads\GoogleAds\V17\Services\MutateGoogleAdsResponse;
-use Google\Ads\GoogleAds\V17\Services\MutateOperation;
-use Google\Ads\GoogleAds\V17\Services\MutateOperationResponse;
-use Google\Ads\GoogleAds\V17\Services\SearchGoogleAdsRequest;
+use Google\Ads\GoogleAds\Lib\V18\GoogleAdsClient;
+use Google\Ads\GoogleAds\Lib\V18\GoogleAdsClientBuilder;
+use Google\Ads\GoogleAds\Lib\V18\GoogleAdsException;
+use Google\Ads\GoogleAds\Util\V18\ResourceNames;
+use Google\Ads\GoogleAds\V18\Enums\ListingGroupFilterListingSourceEnum\ListingGroupFilterListingSource;
+use Google\Ads\GoogleAds\V18\Enums\ListingGroupFilterProductConditionEnum\ListingGroupFilterProductCondition;
+use Google\Ads\GoogleAds\V18\Enums\ListingGroupFilterTypeEnum\ListingGroupFilterType;
+use Google\Ads\GoogleAds\V18\Errors\GoogleAdsError;
+use Google\Ads\GoogleAds\V18\Resources\AssetGroupListingGroupFilter;
+use Google\Ads\GoogleAds\V18\Resources\ListingGroupFilterDimension;
+use Google\Ads\GoogleAds\V18\Resources\ListingGroupFilterDimension\ProductBrand;
+use Google\Ads\GoogleAds\V18\Resources\ListingGroupFilterDimension\ProductCondition;
+use Google\Ads\GoogleAds\V18\Services\AssetGroupListingGroupFilterOperation;
+use Google\Ads\GoogleAds\V18\Services\GoogleAdsRow;
+use Google\Ads\GoogleAds\V18\Services\MutateGoogleAdsRequest;
+use Google\Ads\GoogleAds\V18\Services\MutateGoogleAdsResponse;
+use Google\Ads\GoogleAds\V18\Services\MutateOperation;
+use Google\Ads\GoogleAds\V18\Services\MutateOperationResponse;
+use Google\Ads\GoogleAds\V18\Services\SearchGoogleAdsRequest;
 use Google\ApiCore\ApiException;
 use Google\ApiCore\Serializer;
 
@@ -90,12 +90,6 @@ class AddPerformanceMaxProductListingGroupTree
         // OAuth2 credentials above.
         $googleAdsClient = (new GoogleAdsClientBuilder())->fromFile()
             ->withOAuth2Credential($oAuth2Credential)
-            // We set this value to true to show how to use GAPIC v2 source code. You can remove the
-            // below line if you wish to use the old-style source code. Note that in that case, you
-            // probably need to modify some parts of the code below to make it work.
-            // For more information, see
-            // https://developers.devsite.corp.google.com/google-ads/api/docs/client-libs/php/gapic.
-            ->usingGapicV2Source(true)
             ->build();
 
         try {

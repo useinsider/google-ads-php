@@ -124,6 +124,7 @@ use Google\Ads\GoogleAds\V17\Services\Client\ReachPlanServiceClient;
 use Google\Ads\GoogleAds\V17\Services\Client\RecommendationServiceClient;
 use Google\Ads\GoogleAds\V17\Services\Client\RecommendationSubscriptionServiceClient;
 use Google\Ads\GoogleAds\V17\Services\Client\RemarketingActionServiceClient;
+use Google\Ads\GoogleAds\V17\Services\Client\ShareablePreviewServiceClient;
 use Google\Ads\GoogleAds\V17\Services\Client\SharedCriterionServiceClient;
 use Google\Ads\GoogleAds\V17\Services\Client\SharedSetServiceClient;
 use Google\Ads\GoogleAds\V17\Services\Client\SmartCampaignSettingServiceClient;
@@ -134,6 +135,7 @@ use Google\Ads\GoogleAds\V17\Services\Client\UserDataServiceClient;
 use Google\Ads\GoogleAds\V17\Services\Client\UserListCustomerTypeServiceClient;
 use Google\Ads\GoogleAds\V17\Services\Client\UserListServiceClient;
 use Google\Auth\FetchAuthTokenInterface;
+use Google\Auth\HttpHandler\HttpHandlerFactory;
 use Monolog\Handler\NullHandler;
 use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
@@ -172,6 +174,26 @@ class ServiceClientFactoryTraitTest extends TestCase
             ->withProxy(self::$PROXY)
             ->withTransport(self::$TRANSPORT)
             ->build();
+    }
+
+    public function testSetHttpHandler()
+    {
+        $httpHandler = HttpHandlerFactory::build();
+        $fetchAuthTokenInterfaceMock = $this
+            ->getMockBuilder(FetchAuthTokenInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $googleAdsClient = (new GoogleAdsClientBuilder())
+            ->withOAuth2Credential($fetchAuthTokenInterfaceMock)
+            ->withDeveloperToken(self::$DEVELOPER_TOKEN)
+            ->withLoginCustomerId(self::$LOGIN_CUSTOMER_ID)
+            ->withLogger(new Logger('', [new NullHandler()]))
+            ->withHttpHandler($httpHandler)
+            ->build();
+        $this->assertSame(
+            $httpHandler,
+            $googleAdsClient->getGoogleAdsClientOptions()['transportConfig']['rest']['httpHandler']
+        );
     }
 
     public function testGetAccountBudgetProposalServiceClient()
@@ -1003,6 +1025,14 @@ class ServiceClientFactoryTraitTest extends TestCase
         $this->assertInstanceOf(
             RemarketingActionServiceClient::class,
             $this->googleAdsClient->getRemarketingActionServiceClient()
+        );
+    }
+
+    public function testGetShareablePreviewServiceClient()
+    {
+        $this->assertInstanceOf(
+            ShareablePreviewServiceClient::class,
+            $this->googleAdsClient->getShareablePreviewServiceClient()
         );
     }
 
