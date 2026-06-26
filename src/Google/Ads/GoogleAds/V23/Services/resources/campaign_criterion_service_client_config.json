@@ -1,6 +1,6 @@
 {
     "interfaces": {
-        "google.ads.googleads.v20.services.CampaignCriterionService": {
+        "google.ads.googleads.v23.services.CampaignCriterionService": {
             "retry_codes": {
                 "no_retry_codes": [],
                 "retry_policy_1_codes": [

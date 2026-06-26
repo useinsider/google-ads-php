@@ -1,6 +1,6 @@
 {
     "interfaces": {
-        "google.ads.googleads.v20.services.CustomAudienceService": {
+        "google.ads.googleads.v23.services.CustomAudienceService": {
             "retry_codes": {
                 "no_retry_codes": [],
                 "retry_policy_1_codes": [

@@ -1,6 +1,6 @@
 {
     "interfaces": {
-        "google.ads.googleads.v20.services.RecommendationService": {
+        "google.ads.googleads.v23.services.RecommendationService": {
             "retry_codes": {
                 "no_retry_codes": [],
                 "retry_policy_1_codes": [

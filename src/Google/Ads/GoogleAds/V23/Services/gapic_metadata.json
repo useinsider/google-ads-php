@@ -2,8 +2,8 @@
     "schema": "1.0",
     "comment": "This file maps proto services\/RPCs to the corresponding library clients\/methods",
     "language": "php",
-    "protoPackage": "google.ads.googleads.v20.services",
-    "libraryPackage": "Google\\Ads\\GoogleAds\\V20\\Services",
+    "protoPackage": "google.ads.googleads.v23.services",
+    "libraryPackage": "Google\\Ads\\GoogleAds\\V23\\Services",
     "services": {
         "AccountBudgetProposalService": {
             "clients": {

@@ -1,6 +1,6 @@
 {
     "interfaces": {
-        "google.ads.googleads.v20.services.AssetGroupService": {
+        "google.ads.googleads.v23.services.AssetGroupService": {
             "retry_codes": {
                 "no_retry_codes": [],
                 "retry_policy_1_codes": [

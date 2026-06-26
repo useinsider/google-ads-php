@@ -1,6 +1,6 @@
 {
     "interfaces": {
-        "google.ads.googleads.v20.services.KeywordPlanAdGroupKeywordService": {
+        "google.ads.googleads.v23.services.KeywordPlanAdGroupKeywordService": {
             "retry_codes": {
                 "no_retry_codes": [],
                 "retry_policy_1_codes": [
