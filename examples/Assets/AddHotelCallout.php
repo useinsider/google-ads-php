@@ -24,20 +24,20 @@ use GetOpt\GetOpt;
 use Google\Ads\GoogleAds\Examples\Utils\ArgumentNames;
 use Google\Ads\GoogleAds\Examples\Utils\ArgumentParser;
 use Google\Ads\GoogleAds\Lib\OAuth2TokenBuilder;
-use Google\Ads\GoogleAds\Lib\V17\GoogleAdsClient;
-use Google\Ads\GoogleAds\Lib\V17\GoogleAdsClientBuilder;
-use Google\Ads\GoogleAds\Lib\V17\GoogleAdsException;
-use Google\Ads\GoogleAds\V17\Common\HotelCalloutAsset;
-use Google\Ads\GoogleAds\V17\Enums\AssetFieldTypeEnum\AssetFieldType;
-use Google\Ads\GoogleAds\V17\Errors\GoogleAdsError;
-use Google\Ads\GoogleAds\V17\Resources\Asset;
-use Google\Ads\GoogleAds\V17\Resources\CustomerAsset;
-use Google\Ads\GoogleAds\V17\Services\AssetOperation;
-use Google\Ads\GoogleAds\V17\Services\CustomerAssetOperation;
-use Google\Ads\GoogleAds\V17\Services\MutateAssetResult;
-use Google\Ads\GoogleAds\V17\Services\MutateAssetsRequest;
-use Google\Ads\GoogleAds\V17\Services\MutateCustomerAssetResult;
-use Google\Ads\GoogleAds\V17\Services\MutateCustomerAssetsRequest;
+use Google\Ads\GoogleAds\Lib\V20\GoogleAdsClient;
+use Google\Ads\GoogleAds\Lib\V20\GoogleAdsClientBuilder;
+use Google\Ads\GoogleAds\Lib\V20\GoogleAdsException;
+use Google\Ads\GoogleAds\V20\Common\HotelCalloutAsset;
+use Google\Ads\GoogleAds\V20\Enums\AssetFieldTypeEnum\AssetFieldType;
+use Google\Ads\GoogleAds\V20\Errors\GoogleAdsError;
+use Google\Ads\GoogleAds\V20\Resources\Asset;
+use Google\Ads\GoogleAds\V20\Resources\CustomerAsset;
+use Google\Ads\GoogleAds\V20\Services\AssetOperation;
+use Google\Ads\GoogleAds\V20\Services\CustomerAssetOperation;
+use Google\Ads\GoogleAds\V20\Services\MutateAssetResult;
+use Google\Ads\GoogleAds\V20\Services\MutateAssetsRequest;
+use Google\Ads\GoogleAds\V20\Services\MutateCustomerAssetResult;
+use Google\Ads\GoogleAds\V20\Services\MutateCustomerAssetsRequest;
 use Google\ApiCore\ApiException;
 
 /**
@@ -67,12 +67,6 @@ class AddHotelCallout
         // OAuth2 credentials above.
         $googleAdsClient = (new GoogleAdsClientBuilder())->fromFile()
             ->withOAuth2Credential($oAuth2Credential)
-            // We set this value to true to show how to use GAPIC v2 source code. You can remove the
-            // below line if you wish to use the old-style source code. Note that in that case, you
-            // probably need to modify some parts of the code below to make it work.
-            // For more information, see
-            // https://developers.devsite.corp.google.com/google-ads/api/docs/client-libs/php/gapic.
-            ->usingGapicV2Source(true)
             ->build();
 
         try {
