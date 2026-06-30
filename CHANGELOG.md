@@ -1,3 +1,39 @@
+## 28.0.0
+*    Compatibility with v20.0 of the API: https://developers.google.com/google-ads/api/docs/release-notes
+
+## 27.2.0
+*    Removed support for v17 of the API: https://ads-developers.googleblog.com/2025/04/google-ads-api-v17-sunset-reminder.html
+
+## 26.2.0
+*    Compatibility with v19.1 of the API: https://developers.google.com/google-ads/api/docs/release-notes
+
+## 26.1.0
+*   Added support for v19 of Google Ads API.
+*   Removed support for Feed-related classes, fields and enums in v19.
+*   Updated code examples:
+    * AddPerformanceMaxCampaign
+    * AddPerformanceMaxRetailCampaign
+    * AddShoppingProductAd
+    * GetChangeDetails
+
+## 26.0.0
+*   Removed support for v16 of Google Ads API.
+
+## 25.0.0
+*   Added support for v18 of Google Ads API.
+*   Removed support for the `useGapicV2Source` configuration, as the source code
+    of all versions are generated as GAPIC v2.
+    * Fixed the LaravelSampleApp to use GAPIC v2.
+*   Updated code examples:
+    * GetAllDisapprovedAds
+    * HandlePartialFailure
+
+## 24.0.0
+*   Added support for v17_1 of Google Ads API.
+*   Removed support for v15 of Google Ads API.
+*   Made service client classes non-final.
+*   Added support for setting a REST handler as a client option for each call.
+
 ## 23.1.0
 *   Added support for v17 of Google Ads API.
 *   Updated code examples for removing the usage of `pageSize`:

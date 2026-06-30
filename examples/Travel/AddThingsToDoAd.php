@@ -25,34 +25,34 @@ use Google\Ads\GoogleAds\Examples\Utils\ArgumentNames;
 use Google\Ads\GoogleAds\Examples\Utils\ArgumentParser;
 use Google\Ads\GoogleAds\Examples\Utils\Helper;
 use Google\Ads\GoogleAds\Lib\OAuth2TokenBuilder;
-use Google\Ads\GoogleAds\Lib\V17\GoogleAdsClient;
-use Google\Ads\GoogleAds\Lib\V17\GoogleAdsClientBuilder;
-use Google\Ads\GoogleAds\Lib\V17\GoogleAdsException;
-use Google\Ads\GoogleAds\V17\Common\MaximizeConversionValue;
-use Google\Ads\GoogleAds\V17\Common\TravelAdInfo;
-use Google\Ads\GoogleAds\V17\Enums\AdGroupAdStatusEnum\AdGroupAdStatus;
-use Google\Ads\GoogleAds\V17\Enums\AdGroupStatusEnum\AdGroupStatus;
-use Google\Ads\GoogleAds\V17\Enums\AdGroupTypeEnum\AdGroupType;
-use Google\Ads\GoogleAds\V17\Enums\AdvertisingChannelSubTypeEnum\AdvertisingChannelSubType;
-use Google\Ads\GoogleAds\V17\Enums\AdvertisingChannelTypeEnum\AdvertisingChannelType;
-use Google\Ads\GoogleAds\V17\Enums\BudgetDeliveryMethodEnum\BudgetDeliveryMethod;
-use Google\Ads\GoogleAds\V17\Enums\CampaignStatusEnum\CampaignStatus;
-use Google\Ads\GoogleAds\V17\Errors\GoogleAdsError;
-use Google\Ads\GoogleAds\V17\Resources\Ad;
-use Google\Ads\GoogleAds\V17\Resources\AdGroup;
-use Google\Ads\GoogleAds\V17\Resources\AdGroupAd;
-use Google\Ads\GoogleAds\V17\Resources\Campaign;
-use Google\Ads\GoogleAds\V17\Resources\Campaign\NetworkSettings;
-use Google\Ads\GoogleAds\V17\Resources\Campaign\TravelCampaignSettings;
-use Google\Ads\GoogleAds\V17\Resources\CampaignBudget;
-use Google\Ads\GoogleAds\V17\Services\AdGroupAdOperation;
-use Google\Ads\GoogleAds\V17\Services\AdGroupOperation;
-use Google\Ads\GoogleAds\V17\Services\CampaignBudgetOperation;
-use Google\Ads\GoogleAds\V17\Services\CampaignOperation;
-use Google\Ads\GoogleAds\V17\Services\MutateAdGroupAdsRequest;
-use Google\Ads\GoogleAds\V17\Services\MutateAdGroupsRequest;
-use Google\Ads\GoogleAds\V17\Services\MutateCampaignBudgetsRequest;
-use Google\Ads\GoogleAds\V17\Services\MutateCampaignsRequest;
+use Google\Ads\GoogleAds\Lib\V20\GoogleAdsClient;
+use Google\Ads\GoogleAds\Lib\V20\GoogleAdsClientBuilder;
+use Google\Ads\GoogleAds\Lib\V20\GoogleAdsException;
+use Google\Ads\GoogleAds\V20\Common\MaximizeConversionValue;
+use Google\Ads\GoogleAds\V20\Common\TravelAdInfo;
+use Google\Ads\GoogleAds\V20\Enums\AdGroupAdStatusEnum\AdGroupAdStatus;
+use Google\Ads\GoogleAds\V20\Enums\AdGroupStatusEnum\AdGroupStatus;
+use Google\Ads\GoogleAds\V20\Enums\AdGroupTypeEnum\AdGroupType;
+use Google\Ads\GoogleAds\V20\Enums\AdvertisingChannelSubTypeEnum\AdvertisingChannelSubType;
+use Google\Ads\GoogleAds\V20\Enums\AdvertisingChannelTypeEnum\AdvertisingChannelType;
+use Google\Ads\GoogleAds\V20\Enums\BudgetDeliveryMethodEnum\BudgetDeliveryMethod;
+use Google\Ads\GoogleAds\V20\Enums\CampaignStatusEnum\CampaignStatus;
+use Google\Ads\GoogleAds\V20\Errors\GoogleAdsError;
+use Google\Ads\GoogleAds\V20\Resources\Ad;
+use Google\Ads\GoogleAds\V20\Resources\AdGroup;
+use Google\Ads\GoogleAds\V20\Resources\AdGroupAd;
+use Google\Ads\GoogleAds\V20\Resources\Campaign;
+use Google\Ads\GoogleAds\V20\Resources\Campaign\NetworkSettings;
+use Google\Ads\GoogleAds\V20\Resources\Campaign\TravelCampaignSettings;
+use Google\Ads\GoogleAds\V20\Resources\CampaignBudget;
+use Google\Ads\GoogleAds\V20\Services\AdGroupAdOperation;
+use Google\Ads\GoogleAds\V20\Services\AdGroupOperation;
+use Google\Ads\GoogleAds\V20\Services\CampaignBudgetOperation;
+use Google\Ads\GoogleAds\V20\Services\CampaignOperation;
+use Google\Ads\GoogleAds\V20\Services\MutateAdGroupAdsRequest;
+use Google\Ads\GoogleAds\V20\Services\MutateAdGroupsRequest;
+use Google\Ads\GoogleAds\V20\Services\MutateCampaignBudgetsRequest;
+use Google\Ads\GoogleAds\V20\Services\MutateCampaignsRequest;
 use Google\ApiCore\ApiException;
 
 /**
@@ -83,12 +83,6 @@ class AddThingsToDoAd
         // OAuth2 credentials above.
         $googleAdsClient = (new GoogleAdsClientBuilder())->fromFile()
             ->withOAuth2Credential($oAuth2Credential)
-            // We set this value to true to show how to use GAPIC v2 source code. You can remove the
-            // below line if you wish to use the old-style source code. Note that in that case, you
-            // probably need to modify some parts of the code below to make it work.
-            // For more information, see
-            // https://developers.devsite.corp.google.com/google-ads/api/docs/client-libs/php/gapic.
-            ->usingGapicV2Source(true)
             ->build();
 
         try {

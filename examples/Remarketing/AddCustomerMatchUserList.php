@@ -25,36 +25,36 @@ use Google\Ads\GoogleAds\Examples\Utils\ArgumentNames;
 use Google\Ads\GoogleAds\Examples\Utils\ArgumentParser;
 use Google\Ads\GoogleAds\Examples\Utils\Helper;
 use Google\Ads\GoogleAds\Lib\OAuth2TokenBuilder;
-use Google\Ads\GoogleAds\Lib\V17\GoogleAdsClient;
-use Google\Ads\GoogleAds\Lib\V17\GoogleAdsClientBuilder;
-use Google\Ads\GoogleAds\Lib\V17\GoogleAdsException;
-use Google\Ads\GoogleAds\Lib\V17\GoogleAdsServerStreamDecorator;
-use Google\Ads\GoogleAds\Util\V17\GoogleAdsFailures;
-use Google\Ads\GoogleAds\Util\V17\ResourceNames;
-use Google\Ads\GoogleAds\V17\Common\Consent;
-use Google\Ads\GoogleAds\V17\Common\CrmBasedUserListInfo;
-use Google\Ads\GoogleAds\V17\Common\CustomerMatchUserListMetadata;
-use Google\Ads\GoogleAds\V17\Common\OfflineUserAddressInfo;
-use Google\Ads\GoogleAds\V17\Common\UserData;
-use Google\Ads\GoogleAds\V17\Common\UserIdentifier;
-use Google\Ads\GoogleAds\V17\Enums\ConsentStatusEnum\ConsentStatus;
-use Google\Ads\GoogleAds\V17\Enums\CustomerMatchUploadKeyTypeEnum\CustomerMatchUploadKeyType;
-use Google\Ads\GoogleAds\V17\Enums\OfflineUserDataJobStatusEnum\OfflineUserDataJobStatus;
-use Google\Ads\GoogleAds\V17\Enums\OfflineUserDataJobTypeEnum\OfflineUserDataJobType;
-use Google\Ads\GoogleAds\V17\Errors\GoogleAdsError;
-use Google\Ads\GoogleAds\V17\Resources\OfflineUserDataJob;
-use Google\Ads\GoogleAds\V17\Resources\UserList;
-use Google\Ads\GoogleAds\V17\Services\AddOfflineUserDataJobOperationsRequest;
-use Google\Ads\GoogleAds\V17\Services\AddOfflineUserDataJobOperationsResponse;
-use Google\Ads\GoogleAds\V17\Services\CreateOfflineUserDataJobRequest;
-use Google\Ads\GoogleAds\V17\Services\CreateOfflineUserDataJobResponse;
-use Google\Ads\GoogleAds\V17\Services\GoogleAdsRow;
-use Google\Ads\GoogleAds\V17\Services\MutateUserListsRequest;
-use Google\Ads\GoogleAds\V17\Services\OfflineUserDataJobOperation;
-use Google\Ads\GoogleAds\V17\Services\RunOfflineUserDataJobRequest;
-use Google\Ads\GoogleAds\V17\Services\SearchGoogleAdsRequest;
-use Google\Ads\GoogleAds\V17\Services\SearchGoogleAdsStreamRequest;
-use Google\Ads\GoogleAds\V17\Services\UserListOperation;
+use Google\Ads\GoogleAds\Lib\V20\GoogleAdsClient;
+use Google\Ads\GoogleAds\Lib\V20\GoogleAdsClientBuilder;
+use Google\Ads\GoogleAds\Lib\V20\GoogleAdsException;
+use Google\Ads\GoogleAds\Lib\V20\GoogleAdsServerStreamDecorator;
+use Google\Ads\GoogleAds\Util\V20\GoogleAdsFailures;
+use Google\Ads\GoogleAds\Util\V20\ResourceNames;
+use Google\Ads\GoogleAds\V20\Common\Consent;
+use Google\Ads\GoogleAds\V20\Common\CrmBasedUserListInfo;
+use Google\Ads\GoogleAds\V20\Common\CustomerMatchUserListMetadata;
+use Google\Ads\GoogleAds\V20\Common\OfflineUserAddressInfo;
+use Google\Ads\GoogleAds\V20\Common\UserData;
+use Google\Ads\GoogleAds\V20\Common\UserIdentifier;
+use Google\Ads\GoogleAds\V20\Enums\ConsentStatusEnum\ConsentStatus;
+use Google\Ads\GoogleAds\V20\Enums\CustomerMatchUploadKeyTypeEnum\CustomerMatchUploadKeyType;
+use Google\Ads\GoogleAds\V20\Enums\OfflineUserDataJobStatusEnum\OfflineUserDataJobStatus;
+use Google\Ads\GoogleAds\V20\Enums\OfflineUserDataJobTypeEnum\OfflineUserDataJobType;
+use Google\Ads\GoogleAds\V20\Errors\GoogleAdsError;
+use Google\Ads\GoogleAds\V20\Resources\OfflineUserDataJob;
+use Google\Ads\GoogleAds\V20\Resources\UserList;
+use Google\Ads\GoogleAds\V20\Services\AddOfflineUserDataJobOperationsRequest;
+use Google\Ads\GoogleAds\V20\Services\AddOfflineUserDataJobOperationsResponse;
+use Google\Ads\GoogleAds\V20\Services\CreateOfflineUserDataJobRequest;
+use Google\Ads\GoogleAds\V20\Services\CreateOfflineUserDataJobResponse;
+use Google\Ads\GoogleAds\V20\Services\GoogleAdsRow;
+use Google\Ads\GoogleAds\V20\Services\MutateUserListsRequest;
+use Google\Ads\GoogleAds\V20\Services\OfflineUserDataJobOperation;
+use Google\Ads\GoogleAds\V20\Services\RunOfflineUserDataJobRequest;
+use Google\Ads\GoogleAds\V20\Services\SearchGoogleAdsRequest;
+use Google\Ads\GoogleAds\V20\Services\SearchGoogleAdsStreamRequest;
+use Google\Ads\GoogleAds\V20\Services\UserListOperation;
 use Google\ApiCore\ApiException;
 
 /**
@@ -74,7 +74,7 @@ use Google\ApiCore\ApiException;
  * - It may take up to several hours for the list to be populated with users.
  * - Email addresses must be associated with a Google account.
  * - For privacy purposes, the user list size will show as zero until the list has
- *   at least 1,000 users. After that, the size will be rounded to the two most
+ *   at least 100 users. After that, the size will be rounded to the two most
  *   significant digits.
  */
 class AddCustomerMatchUserList
@@ -115,12 +115,6 @@ class AddCustomerMatchUserList
         $googleAdsClient = (new GoogleAdsClientBuilder())
             ->fromFile()
             ->withOAuth2Credential($oAuth2Credential)
-            // We set this value to true to show how to use GAPIC v2 source code. You can remove the
-            // below line if you wish to use the old-style source code. Note that in that case, you
-            // probably need to modify some parts of the code below to make it work.
-            // For more information, see
-            // https://developers.devsite.corp.google.com/google-ads/api/docs/client-libs/php/gapic.
-            ->usingGapicV2Source(true)
             ->build();
 
         try {
@@ -231,8 +225,8 @@ class AddCustomerMatchUserList
             'name' => 'Customer Match list #' . Helper::getPrintableDatetime(),
             'description' => 'A list of customers that originated from email '
                 . 'and physical addresses',
-            // Customer Match user lists can use a membership life span of 10000 to
-            // indicate unlimited; otherwise normal values apply.
+            // Membership life span must be between 0 and 540 days inclusive. See:
+            // https://developers.google.com/google-ads/api/reference/rpc/latest/UserList#membership_life_span
             // Sets the membership life span to 30 days.
             'membership_life_span' => 30,
             'crm_based_user_list' => new CrmBasedUserListInfo([
